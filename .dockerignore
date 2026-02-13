@@ -1,0 +1,16 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+build
+coverage
+.DS_Store
+*.pem

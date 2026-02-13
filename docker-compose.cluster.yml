@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  app:
+    # ไม่ต้องใส่ container_name เพราะเราจะรันหลายตัว (Replicas)
+    image: thai-mooc:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # Performance: ลด Ram ลงหน่อยเพราะรันแยก process แล้ว
+      - NODE_OPTIONS=--max-old-space-size=1024
+    deploy:
+      replicas: 2  # รัน 2 ตัว (หรือตามจำนวน CPU Core)
+      resources:
+        limits:
+          cpus: '0.9'  # จำกัดตัวละเกือบ 1 Core
+          memory: 1.5G
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+    # ไม่ expose port 3000 ออกมาตรงๆ แต่ให้คุยกันใน internal network
+    expose:
+      - "3000"
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: thai-mooc-lb
+    restart: always
+    ports:
+      - "80:80" # เปิด port 80 รับ traffic
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: thai-mooc-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: thai_mooc
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    # ไม่ต้อง expose 3306 ออกข้างนอกถ้าไม่จำเป็น (security)
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

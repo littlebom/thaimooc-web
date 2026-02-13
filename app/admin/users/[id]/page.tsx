@@ -1,0 +1,82 @@
+import { UserForm } from "@/components/admin/user-form";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { queryOne } from "@/lib/mysql-direct";
+import { notFound, redirect } from "next/navigation";
+import { getSession, isSuperAdmin, isInstitutionAdmin, hasInstitutionAccess } from "@/lib/auth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+async function getUser(id: string) {
+  const user = await queryOne<any>(
+    'SELECT id, username, name, email, role, isActive, institutionId FROM admin_users WHERE id = ?',
+    [id]
+  );
+
+  if (!user) {
+    notFound();
+  }
+
+  return user;
+}
+
+export default async function EditUserPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const session = await getSession();
+
+  if (!session) {
+    redirect('/admin/login');
+  }
+
+  const { id } = await params;
+  const user = await getUser(id);
+
+  // Check permissions: Super Admin can edit all, Institution Admin only own institution
+  const canAccess = isSuperAdmin(session) ||
+    (isInstitutionAdmin(session) && hasInstitutionAccess(session, user.institutionId));
+
+  if (!canAccess) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-red-600">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              คุณไม่มีสิทธิ์แก้ไขผู้ใช้นี้
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // For Institution Admin, preset the institutionId
+  const isInstitutionView = isInstitutionAdmin(session) && !isSuperAdmin(session);
+  const presetInstitutionId = isInstitutionView ? session.institutionId : undefined;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" asChild>
+          <Link href="/admin/users">
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">แก้ไขผู้ใช้งาน</h1>
+          <p className="text-muted-foreground mt-2">
+            แก้ไขข้อมูลบัญชีผู้ดูแลระบบ: {user.name}
+          </p>
+        </div>
+      </div>
+
+      <UserForm user={user} presetInstitutionId={presetInstitutionId} isInstitutionView={isInstitutionView} />
+    </div>
+  );
+}
+
