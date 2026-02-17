@@ -73,9 +73,7 @@ export function CourseCardLightTech({
             <Card className="font-sans h-full flex flex-col bg-gradient-to-br from-[#f0f9ff] to-[#e0f2fe] border-blue-100/50 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_-15px_rgba(14,165,233,0.3)] hover:-translate-y-2 transition-all duration-500 ease-out overflow-hidden rounded-[5px] relative ring-1 ring-white/60">
 
                 {/* Tech Decoration: Subtle Grid/Particles Background (CSS Pattern) */}
-                <div className="absolute inset-0 opacity-30 pointer-events-none"
-                    style={{ backgroundImage: 'radial-gradient(#94a3b8 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-                />
+
 
                 {/* Image Area - Full Width */}
                 <div className="relative aspect-video overflow-hidden border-b border-blue-50/50 flex-shrink-0">

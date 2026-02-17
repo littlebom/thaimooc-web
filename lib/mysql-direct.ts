@@ -56,10 +56,15 @@ export async function query<T = any>(
   params?: SqlParams
 ): Promise<T[]> {
   try {
+    if (process.env.BUILD_MODE === 'true') {
+      console.log('Build mode: Skipping DB query');
+      return [] as T[];
+    }
     const [rows] = await pool.execute(sql, params);
     return rows as T[];
   } catch (error) {
     console.error('MySQL Query Error:', error);
+    if (process.env.BUILD_MODE === 'true') return [] as T[];
     throw error;
   }
 }
@@ -72,11 +77,16 @@ export async function queryOne<T = any>(
   params?: SqlParams
 ): Promise<T | null> {
   try {
+    if (process.env.BUILD_MODE === 'true') {
+      console.log('Build mode: Skipping DB queryOne');
+      return null;
+    }
     const [rows] = await pool.execute(sql, params);
     const result = rows as T[];
     return result.length > 0 ? result[0] : null;
   } catch (error) {
     console.error('MySQL Query Error:', error);
+    if (process.env.BUILD_MODE === 'true') return null;
     throw error;
   }
 }

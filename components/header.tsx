@@ -37,7 +37,7 @@ export function Header() {
               )}
             </Link>
 
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden lg:flex items-center space-x-6">
               <Link
                 href="/"
                 className="text-[1rem] font-medium hover:text-primary transition-colors"
@@ -106,7 +106,7 @@ export function Header() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden"
+                className="lg:hidden"
                 aria-label={t("เปิดเมนู", "Open menu")}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu"
@@ -121,7 +121,7 @@ export function Header() {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-[60] md:hidden"
+          className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
           aria-hidden="true"
         />
@@ -130,7 +130,7 @@ export function Header() {
       {/* Mobile Menu Sidebar */}
       <div
         id="mobile-menu"
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[70] transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-[70] transform transition-transform duration-300 ease-in-out lg:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         role="dialog"
         aria-modal="true"

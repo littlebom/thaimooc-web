@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Lock, User } from "lucide-react";
+import Image from "next/image";
+import { useSettings } from "@/lib/settings-context";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { settings } = useSettings();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,12 +21,10 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
 
-    console.log('[LoginPage] Submitting login...', { username });
-
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        credentials: "include", // ✅ FIX: รับ cookies จาก server
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -31,25 +32,14 @@ export default function AdminLoginPage() {
       });
 
       const data = await response.json();
-      console.log('[LoginPage] Login response:', { status: response.status, data });
 
       if (data.success) {
-        console.log('[LoginPage] ✅ Login successful! User:', data.user);
-        console.log('[LoginPage] Waiting 100ms for cookie to be set...');
-
-        // ✅ FIX: รอให้ cookie พร้อมก่อน redirect (แก้ปัญหา race condition)
-        // เพิ่ม delay เล็กน้อยเพื่อให้ browser จัดการ cookie ให้เสร็จ
         await new Promise(resolve => setTimeout(resolve, 100));
-
-        console.log('[LoginPage] Redirecting to /admin...');
-        // Redirect ไป admin page
         window.location.href = "/admin";
       } else {
-        console.error('[LoginPage] ❌ Login failed:', data.error);
         setError(data.error || "เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
       }
     } catch (error) {
-      console.error('[LoginPage] ❌ Login error:', error);
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
       setLoading(false);
@@ -57,15 +47,35 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-xl">
+    <div className="relative min-h-screen flex items-center justify-center bg-[#0c1c3b] overflow-hidden font-sans">
+      {/* Background Glows */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-[radial-gradient(circle,rgba(29,130,183,0.18)_0%,transparent_70%)]"></div>
+        <div className="absolute bottom-[-15%] left-[5%] w-[80%] h-[80%] bg-[radial-gradient(circle,rgba(247,86,24,0.12)_0%,transparent_70%)]"></div>
+        <div className="absolute top-[10%] right-[-15%] w-[90%] h-[90%] bg-[radial-gradient(circle,rgba(252,180,120,0.1)_0%,transparent_70%)]"></div>
+      </div>
+
+      {/* Login Card */}
+      <Card className="w-full max-w-md shadow-2xl relative z-20 border-white/10 bg-white/95 backdrop-blur-sm">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-            <BookOpen className="h-8 w-8 text-white" />
+          <div className="mx-auto w-auto h-16 flex items-center justify-center">
+            {settings?.siteLogo ? (
+              <div className="relative h-16 w-48">
+                <Image
+                  src={settings.siteLogo}
+                  alt={settings.siteName || "Thai MOOC"}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+                <BookOpen className="h-8 w-8 text-white" />
+              </div>
+            )}
           </div>
           <div>
-            <CardTitle className="text-3xl font-bold">Thai MOOC</CardTitle>
-            <CardDescription className="text-lg mt-2">
+            <CardDescription className="text-lg mt-2 font-medium text-slate-600">
               เข้าสู่ระบบจัดการ Admin
             </CardDescription>
           </div>

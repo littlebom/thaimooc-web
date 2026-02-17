@@ -250,7 +250,7 @@ export function AIParticleHeroDemo() {
                         <h1 className="text-4xl md:text-[90px] font-semibold leading-[0.95] mb-6 landscape:mb-4 md:mb-12 tracking-tighter">
                             <span className="relative inline-block">
                                 THAI-MOOC
-                                <div className="absolute bottom-[-7px] left-0 w-full h-[15%] bg-gradient-to-r from-orange-500 to-pink-500 -z-10 opacity-60 blur-[1px]"></div>
+                                <div className="absolute bottom-[-8px] left-0 w-full h-[15%] bg-gradient-to-r from-orange-500 to-pink-500 -z-10 opacity-60 blur-[1px]"></div>
                             </span> <br />
                             <span className="tracking-[0.03em]">Ecosystem</span>
                         </h1>
@@ -289,7 +289,7 @@ export function AIParticleHeroDemo() {
 
             {/* Glassmorphic Stats Cards - Hidden on Mobile */}
             <div className="hidden lg:block absolute bottom-0 left-0 w-full z-30 px-8 pb-8">
-                <div className="max-w-[1200px] landscape:max-w-[700px] md:landscape:max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="container mx-auto px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Course Card */}
                     <div className="flex items-center gap-4 p-5 rounded-[5px] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:bg-white/10 transition-all duration-300">
                         <div className="p-3 rounded-[5px] bg-blue-500/20 text-blue-400">
