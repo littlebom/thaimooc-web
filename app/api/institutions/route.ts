@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/mysql-direct";
-import { apiCache } from "@/lib/api-cache";
+import { redisCache } from "@/lib/redis-cache";
 import { addCacheHeaders } from "@/lib/cache-headers";
 import { Institution, ApiResponse } from "@/lib/types";
 
@@ -18,7 +18,7 @@ interface CreateInstitutionBody {
 export async function GET() {
   try {
     // Check cache first
-    const cachedData = apiCache.get(CACHE_KEY) as ApiResponse<Institution[]> | undefined;
+    const cachedData = await redisCache.get<ApiResponse<Institution[]>>(CACHE_KEY);
     if (cachedData) {
       const response = NextResponse.json(cachedData);
       addCacheHeaders(response.headers, 'LONG'); // 15 minutes cache
@@ -34,8 +34,8 @@ export async function GET() {
       data: institutions,
     };
 
-    // Cache for 5 minutes (institutions don't change often)
-    apiCache.set(CACHE_KEY, responseData, 5 * 60 * 1000);
+    // Cache for 15 minutes (institutions don't change often)
+    await redisCache.set(CACHE_KEY, responseData, { ttl: 15 * 60 });
 
     const response = NextResponse.json(responseData);
     addCacheHeaders(response.headers, 'LONG'); // 15 minutes cache
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Clear cache when new institution is added
-    apiCache.delete(CACHE_KEY);
+    await redisCache.delete(CACHE_KEY);
 
     const response: ApiResponse<Institution> = {
       success: true,

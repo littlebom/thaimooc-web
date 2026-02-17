@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
 import { LineContactWidget } from "@/components/line-contact-widget";
+import { useSettings } from "@/lib/settings-context";
 
 interface ActionButton {
   type: "support_redirect" | "ask_another";
@@ -29,6 +30,7 @@ interface UserInfo {
 }
 
 export function ChatbotWidget() {
+  const { settings } = useSettings();
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const [lineQrCodeUrl, setLineQrCodeUrl] = useState<string | null>(null);
   const [lineOfficialId, setLineOfficialId] = useState<string | null>(null);
@@ -63,25 +65,13 @@ export function ChatbotWidget() {
     setShouldAutoScroll(isUserAtBottom());
   };
 
-  // Load chatbot settings from API
   useEffect(() => {
-    async function loadChatbotSettings() {
-      try {
-        const response = await fetch('/api/settings');
-        if (response.ok) {
-          const data = await response.json();
-          setChatbotEnabled(data.chatbotEnabled ?? true);
-          setLineQrCodeUrl(data.lineQrCodeUrl || null);
-          setLineOfficialId(data.lineOfficialId || null);
-        }
-      } catch (error) {
-        console.error('Failed to load chatbot settings:', error);
-        // Default to chatbot enabled on error
-        setChatbotEnabled(true);
-      }
+    if (settings) {
+      setChatbotEnabled(settings.chatbotEnabled ?? true);
+      setLineQrCodeUrl(settings.lineQrCodeUrl || null);
+      setLineOfficialId(settings.lineOfficialId || null);
     }
-    loadChatbotSettings();
-  }, []);
+  }, [settings]);
 
   // Load user info from localStorage on mount
   useEffect(() => {

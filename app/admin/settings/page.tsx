@@ -9,20 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { Save, X, Shield, Building2, CheckCircle2, AlertCircle, Loader2, Play, Pause, RefreshCw, BrainCircuit, Database, Mail } from "lucide-react";
+import { Save, X, Shield, Building2, CheckCircle2, AlertCircle, Loader2, Play, Pause, RefreshCw, BrainCircuit, Database, MessageSquare } from "lucide-react";
 import type { WebAppSettings, Institution } from "@/lib/types";
 import Image from "next/image";
 import { ImageUploadWithCrop } from "@/components/admin/image-upload-with-crop";
 import { useNotification } from "@/components/ui/notification-dialog";
 import { SafeImage } from "@/components/safe-image";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 export default function AdminSettingsPage() {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -32,11 +24,6 @@ export default function AdminSettingsPage() {
   const { showSuccess, showError, NotificationComponent } = useNotification();
   const [checkingApi, setCheckingApi] = useState(false);
   const [apiStatus, setApiStatus] = useState<'valid' | 'invalid' | null>(null);
-
-  // SMTP Test State
-  const [isTestEmailOpen, setIsTestEmailOpen] = useState(false);
-  const [testEmailAddress, setTestEmailAddress] = useState("");
-  const [sendingTestEmail, setSendingTestEmail] = useState(false);
 
   // === SKILL ANALYSIS STATE ===
   interface SkillStats {
@@ -173,51 +160,6 @@ export default function AdminSettingsPage() {
       showError("Error", "An unexpected error occurred");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleTestSmtp = async () => {
-    if (!testEmailAddress) {
-      showError("Required", "Please enter a recipient email address");
-      return;
-    }
-
-    // Validate required SMTP fields
-    if (!globalFormData.smtpHost || !globalFormData.smtpPort || !globalFormData.smtpUser || !globalFormData.smtpPassword) {
-      showError("Configuration Missing", "Please fill in all SMTP fields before testing");
-      setIsTestEmailOpen(false);
-      return;
-    }
-
-    setSendingTestEmail(true);
-    try {
-      const response = await fetch("/api/settings/test-smtp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          smtpHost: globalFormData.smtpHost,
-          smtpPort: globalFormData.smtpPort,
-          smtpUser: globalFormData.smtpUser,
-          smtpPassword: globalFormData.smtpPassword,
-          smtpSecure: globalFormData.smtpSecure,
-          smtpFromEmail: globalFormData.smtpFromEmail,
-          toEmail: testEmailAddress,
-        }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        showSuccess("Email Sent", "Test email sent successfully! Please check your inbox.");
-        setIsTestEmailOpen(false);
-        setTestEmailAddress("");
-      } else {
-        showError("Failed to Send", result.error || "Could not send test email");
-        if (result.details) console.error("SMTP Error Details:", result.details);
-      }
-    } catch (error) {
-      showError("Error", "Failed to connect to test endpoint");
-    } finally {
-      setSendingTestEmail(false);
     }
   };
 
@@ -536,8 +478,8 @@ export default function AdminSettingsPage() {
               <TabsTrigger value="general">General Settings</TabsTrigger>
               <TabsTrigger value="social">Social Media</TabsTrigger>
               <TabsTrigger value="preloader">Media Management</TabsTrigger>
-              <TabsTrigger value="api">API Integration</TabsTrigger>
-              <TabsTrigger value="skills">Skill Analysis</TabsTrigger>
+              <TabsTrigger value="skills">AI & Skill Analysis</TabsTrigger>
+              <TabsTrigger value="cache">Cache Management</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-6 mt-6">
@@ -642,7 +584,42 @@ export default function AdminSettingsPage() {
                       Link from Google Maps "Embed a map" (src attribute)
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
+            <TabsContent value="social" className="space-y-6 mt-6">
+              {/* Social Media Fields reused */}
+              <Card>
+                <CardHeader><CardTitle>Social Media Links</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Facebook URL</Label>
+                    <Input value={globalFormData.facebookUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, facebookUrl: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Twitter URL</Label>
+                    <Input value={globalFormData.twitterUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, twitterUrl: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>YouTube URL</Label>
+                    <Input value={globalFormData.youtubeUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, youtubeUrl: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Line URL</Label>
+                    <Input value={globalFormData.lineUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, lineUrl: e.target.value })} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    AI Chatbot & Support
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <div className="flex items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
                       <Label className="text-base">AI Chatbot</Label>
@@ -679,31 +656,6 @@ export default function AdminSettingsPage() {
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="social" className="space-y-6 mt-6">
-              {/* Social Media Fields reused */}
-              <Card>
-                <CardHeader><CardTitle>Social Media Links</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Facebook URL</Label>
-                    <Input value={globalFormData.facebookUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, facebookUrl: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Twitter URL</Label>
-                    <Input value={globalFormData.twitterUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, twitterUrl: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>YouTube URL</Label>
-                    <Input value={globalFormData.youtubeUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, youtubeUrl: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Line URL</Label>
-                    <Input value={globalFormData.lineUrl || ""} onChange={(e) => setGlobalFormData({ ...globalFormData, lineUrl: e.target.value })} />
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -748,18 +700,43 @@ export default function AdminSettingsPage() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Primary Color</Label>
+                          <Label>Website Primary Color</Label>
                           <div className="flex gap-2">
                             <Input
                               type="color"
-                              value={globalFormData.preloaderPrimaryColor || "#000000"}
-                              onChange={(e) => setGlobalFormData({ ...globalFormData, preloaderPrimaryColor: e.target.value })}
+                              value={globalFormData.primaryColor || "#2563eb"}
+                              onChange={(e) => setGlobalFormData({
+                                ...globalFormData,
+                                primaryColor: e.target.value,
+                                preloaderPrimaryColor: e.target.value // Sync for backward compatibility
+                              })}
                               className="w-16 p-1 h-10"
                             />
                             <Input
-                              value={globalFormData.preloaderPrimaryColor || ""}
-                              onChange={(e) => setGlobalFormData({ ...globalFormData, preloaderPrimaryColor: e.target.value })}
-                              placeholder="#000000"
+                              value={globalFormData.primaryColor || ""}
+                              onChange={(e) => setGlobalFormData({
+                                ...globalFormData,
+                                primaryColor: e.target.value,
+                                preloaderPrimaryColor: e.target.value
+                              })}
+                              placeholder="#2563eb"
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">This color will be used for buttons, badges, and other primary elements.</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Website Secondary Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              value={globalFormData.secondaryColor || "#64748b"}
+                              onChange={(e) => setGlobalFormData({ ...globalFormData, secondaryColor: e.target.value })}
+                              className="w-16 p-1 h-10"
+                            />
+                            <Input
+                              value={globalFormData.secondaryColor || ""}
+                              onChange={(e) => setGlobalFormData({ ...globalFormData, secondaryColor: e.target.value })}
+                              placeholder="#64748b"
                             />
                           </div>
                         </div>
@@ -847,190 +824,81 @@ export default function AdminSettingsPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="api" className="space-y-6 mt-6">
-              <Card>
-                <CardHeader><CardTitle>API Configuration</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Gemini API Key</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          type="password"
-                          value={globalFormData.geminiApiKey || ""}
-                          onChange={(e) => setGlobalFormData({ ...globalFormData, geminiApiKey: e.target.value })}
-                          placeholder="AIzaSy..."
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={async () => {
-                            if (!globalFormData.geminiApiKey) {
-                              showError("Error", "Please enter an API Key first");
-                              return;
-                            }
-                            setCheckingApi(true);
-                            try {
-                              const res = await fetch('/api/settings/test-gemini', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ apiKey: globalFormData.geminiApiKey })
-                              });
-                              const data = await res.json();
-                              if (data.success) {
-                                setApiStatus('valid');
-                                showSuccess("Connection Successful", "Gemini API Key is valid");
-                              } else {
-                                setApiStatus('invalid');
-                                showError("Connection Failed", data.error || "Invalid API Key");
-                              }
-                            } catch (e) {
-                              setApiStatus('invalid');
-                              showError("Error", "Failed to test connection");
-                            } finally {
-                              setCheckingApi(false);
-                            }
-                          }}
-                          disabled={checkingApi || !globalFormData.geminiApiKey}
-                        >
-                          {checkingApi ? <Loader2 className="w-4 h-4 animate-spin" /> : "Test Connection"}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {apiStatus && (
-                      <div className={`flex items-center gap-2 text-sm p-3 rounded-md ${apiStatus === 'valid' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-                        }`}>
-                        {apiStatus === 'valid' ? (
-                          <>
-                            <CheckCircle2 className="w-4 h-4" />
-                            <span>API Key is valid and active</span>
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="w-4 h-4" />
-                            <span>Failed to connect to Gemini API</span>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
+            <TabsContent value="skills" className="space-y-6 mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-indigo-600" />
-                    SMTP Configuration (Google / Other)
+                    <Shield className="h-5 w-5 text-primary" />
+                    AI API Configuration
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label>SMTP Host</Label>
-                      <Input
-                        value={globalFormData.smtpHost || ""}
-                        onChange={(e) => setGlobalFormData({ ...globalFormData, smtpHost: e.target.value })}
-                        placeholder="smtp.gmail.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>SMTP Port</Label>
-                      <Input
-                        type="number"
-                        value={globalFormData.smtpPort || ""}
-                        onChange={(e) => setGlobalFormData({ ...globalFormData, smtpPort: parseInt(e.target.value) || 0 })}
-                        placeholder="587"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>SMTP User</Label>
-                      <Input
-                        value={globalFormData.smtpUser || ""}
-                        onChange={(e) => setGlobalFormData({ ...globalFormData, smtpUser: e.target.value })}
-                        placeholder="your-email@gmail.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>SMTP Password</Label>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Gemini API Key</Label>
+                    <div className="flex gap-2">
                       <Input
                         type="password"
-                        value={globalFormData.smtpPassword || ""}
-                        onChange={(e) => setGlobalFormData({ ...globalFormData, smtpPassword: e.target.value })}
-                        placeholder="App Password"
+                        value={globalFormData.geminiApiKey || ""}
+                        onChange={(e) => setGlobalFormData({ ...globalFormData, geminiApiKey: e.target.value })}
+                        placeholder="AIzaSy..."
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>From Email</Label>
-                      <Input
-                        value={globalFormData.smtpFromEmail || ""}
-                        onChange={(e) => setGlobalFormData({ ...globalFormData, smtpFromEmail: e.target.value })}
-                        placeholder="noreply@thaimooc.ac.th"
-                      />
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <Label className="text-base">Secure Connection (TLS/SSL)</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Enable secure connection for SMTP
-                        </p>
-                      </div>
-                      <Switch
-                        checked={globalFormData.smtpSecure || false}
-                        onCheckedChange={(checked) => setGlobalFormData({ ...globalFormData, smtpSecure: checked })}
-                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={async () => {
+                          if (!globalFormData.geminiApiKey) {
+                            showError("Error", "Please enter an API Key first");
+                            return;
+                          }
+                          setCheckingApi(true);
+                          try {
+                            const res = await fetch('/api/settings/test-gemini', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ apiKey: globalFormData.geminiApiKey })
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              setApiStatus('valid');
+                              showSuccess("Connection Successful", "Gemini API Key is valid");
+                            } else {
+                              setApiStatus('invalid');
+                              showError("Connection Failed", data.error || "Invalid API Key");
+                            }
+                          } catch (e) {
+                            setApiStatus('invalid');
+                            showError("Error", "Failed to test connection");
+                          } finally {
+                            setCheckingApi(false);
+                          }
+                        }}
+                        disabled={checkingApi || !globalFormData.geminiApiKey}
+                      >
+                        {checkingApi ? <Loader2 className="w-4 h-4 animate-spin" /> : "Test Connection"}
+                      </Button>
                     </div>
                   </div>
-                  <div className="mt-6 flex justify-end">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsTestEmailOpen(true)}
-                      className="gap-2"
-                    >
-                      <Mail className="h-4 w-4" /> Test Connection
-                    </Button>
-                  </div>
+
+                  {apiStatus && (
+                    <div className={`flex items-center gap-2 text-sm p-3 rounded-md ${apiStatus === 'valid' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                      }`}>
+                      {apiStatus === 'valid' ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>API Key is valid and active</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4" />
+                          <span>Failed to connect to Gemini API</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            </TabsContent>
 
-            <Dialog open={isTestEmailOpen} onOpenChange={setIsTestEmailOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Send Test Email</DialogTitle>
-                  <DialogDescription>
-                    Enter an email address to receive a test message using the current SMTP settings.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="py-4">
-                  <Label htmlFor="test-email">Recipient Email</Label>
-                  <Input
-                    id="test-email"
-                    value={testEmailAddress}
-                    onChange={(e) => setTestEmailAddress(e.target.value)}
-                    placeholder="recipient@example.com"
-                    className="mt-2"
-                  />
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsTestEmailOpen(false)} disabled={sendingTestEmail}>Cancel</Button>
-                  <Button onClick={handleTestSmtp} disabled={sendingTestEmail}>
-                    {sendingTestEmail ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
-                      </>
-                    ) : (
-                      "Send Email"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-            <TabsContent value="skills" className="space-y-6 mt-6">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pt-4 border-t">
                 <div>
                   <h2 className="text-2xl font-bold flex items-center gap-2">
                     <BrainCircuit className="h-6 w-6 text-indigo-600" />
@@ -1175,6 +1043,103 @@ export default function AdminSettingsPage() {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="cache" className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5 text-primary" />
+                    Cache Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage server-side memory cache to ensure the latest data is displayed on the public site.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-4">
+                    <AlertCircle className="h-6 w-6 text-amber-600 shrink-0" />
+                    <div className="text-sm text-amber-800">
+                      <p className="font-semibold">Warning</p>
+                      <p>
+                        Clearing the cache will force the server to fetch fresh data from the database for all users.
+                        While this ensures data accuracy, it may briefly increase server load for the first few requests.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm">
+                      <div>
+                        <h4 className="font-semibold">Clear All Server Cache</h4>
+                        <p className="text-sm text-muted-foreground">Flushes all cached courses, categories, institutions, banners, and settings.</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={async () => {
+                          try {
+                            setSaving(true);
+                            const res = await fetch('/api/admin/cache/clear', { method: 'POST' });
+                            const data = await res.json();
+                            if (data.success) {
+                              showSuccess("Cache Cleared", "System cache has been successfully flushed.", 3000);
+                            } else {
+                              showError("Failed", data.error || "Could not clear cache");
+                            }
+                          } catch (e) {
+                            showError("Error", "Network error while clearing cache");
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={saving}
+                        className="gap-2"
+                      >
+                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                        Clear All Cache
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 border rounded-lg bg-gray-50 text-center">
+                        <div className="text-2xl font-bold text-primary">GET</div>
+                        <div className="text-xs text-muted-foreground uppercase mt-1">Faster Load</div>
+                      </div>
+                      <div className="p-4 border rounded-lg bg-gray-50 text-center">
+                        <div className="text-2xl font-bold text-primary">POST/PUT</div>
+                        <div className="text-xs text-muted-foreground uppercase mt-1">Auto Invalidation</div>
+                      </div>
+                      <div className="p-4 border rounded-lg bg-gray-50 text-center">
+                        <div className="text-2xl font-bold text-primary">TTL</div>
+                        <div className="text-xs text-muted-foreground uppercase mt-1">5-15 Minutes</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cache Optimization Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <span>Unified Memory Cache (Centralized lib/redis-cache.ts)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <span>Shared Settings Context (Request Deduplication)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <span>Automatic Invalidation on Create/Update/Delete</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
             </TabsContent>
 
           </Tabs>

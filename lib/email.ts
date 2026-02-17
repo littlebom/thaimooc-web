@@ -1,43 +1,6 @@
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
 
-interface SmtpConfig {
-  host: string;
-  port: number;
-  user: string;
-  pass: string;
-  secure: boolean;
-  from: string;
-}
-
-export async function sendSmtpEmail(config: SmtpConfig, to: string, subject: string, html: string) {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: config.host,
-      port: config.port,
-      secure: config.secure, // true for 465, false for other ports
-      auth: {
-        user: config.user,
-        pass: config.pass,
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: config.from,
-      to,
-      subject,
-      html,
-    });
-
-    console.log("✅ SMTP Email sent: %s", info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error("❌ SMTP Email Error:", error);
-    return { success: false, error };
-  }
-}
-
-
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
@@ -350,3 +313,46 @@ function getTicketReplyEmailHTML(data: ReplyEmailData): string {
 </html>
 `;
 }
+
+/**
+ * Send a test SMTP email using provided configuration
+ */
+export async function sendSmtpEmail(
+  config: {
+    host: string;
+    port: number;
+    user: string;
+    pass: string;
+    secure: boolean;
+    from: string;
+  },
+  to: string,
+  subject: string,
+  html: string
+) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: {
+        user: config.user,
+        pass: config.pass,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: config.from,
+      to,
+      subject,
+      html,
+    });
+
+    console.log("✅ SMTP Test Email sent:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("❌ SMTP Test Error:", error);
+    return { success: false, error };
+  }
+}
+

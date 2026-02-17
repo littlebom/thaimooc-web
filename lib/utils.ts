@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { getImagePlaceholder } from "./data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,7 +30,7 @@ export function getImageUrl(imageId: string | null | undefined): string {
     return imageId;
   }
 
-  // Otherwise, try to get URL from ImagePlaceholder
-  const placeholder = getImagePlaceholder(imageId);
-  return placeholder?.url || "/placeholder.png";
+  // Otherwise, return placeholder as fallback
+  // The database-driven placeholder logic was causing build errors in client components
+  return "/placeholder.png";
 }

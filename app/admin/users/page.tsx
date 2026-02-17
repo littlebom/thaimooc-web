@@ -4,58 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { UsersList } from "@/components/admin/users-list";
 import { query } from "@/lib/mysql-direct";
-import { getSession, isSuperAdmin, isInstitutionAdmin } from "@/lib/auth";
+import { requireSuperAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-async function getUsers(institutionId?: string | null) {
-  if (institutionId) {
-    // Institution Admin sees only users from their institution
-    const users = await query<any>(
-      'SELECT id, username, name, email, role, isActive, institutionId, lastLogin, createdAt, updatedAt FROM admin_users WHERE institutionId = ? ORDER BY createdAt DESC',
-      [institutionId]
-    );
-    return users;
-  }
-
-  // Super Admin sees all users
+async function getUsers() {
   const users = await query<any>(
-    'SELECT id, username, name, email, role, isActive, institutionId, lastLogin, createdAt, updatedAt FROM admin_users ORDER BY createdAt DESC'
+    'SELECT id, username, name, email, role, isActive, lastLogin, createdAt, updatedAt FROM admin_users ORDER BY createdAt DESC'
   );
+
   return users;
 }
 
 export default async function UsersPage() {
-  const session = await getSession();
-
-  if (!session) {
+  // Check if user is Super Admin
+  try {
+    await requireSuperAdmin();
+  } catch (error) {
+    // If not super admin, show access denied
+    if (error instanceof Error && error.message.includes('Forbidden')) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-red-600">Access Denied</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                คุณไม่มีสิทธิ์เข้าถึงหน้านี้ เฉพาะ Super Admin เท่านั้นที่สามารถจัดการ Admin Users ได้
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    // If not authenticated, redirect to login
     redirect('/admin/login');
   }
 
-  // Check permissions: Super Admin or Institution Admin
-  const canAccess = isSuperAdmin(session) || isInstitutionAdmin(session);
-
-  if (!canAccess) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              คุณไม่มีสิทธิ์เข้าถึงหน้านี้
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Determine which users to show
-  const institutionId = isInstitutionAdmin(session) ? session.institutionId : null;
-  const users = await getUsers(institutionId);
-  const isInstitutionView = !!institutionId;
+  const users = await getUsers();
 
   return (
     <div className="space-y-6">
@@ -63,9 +50,7 @@ export default async function UsersPage() {
         <div>
           <h1 className="text-3xl font-bold">จัดการผู้ใช้งาน</h1>
           <p className="text-muted-foreground mt-2">
-            {isInstitutionView
-              ? "จัดการผู้ใช้งานในสถาบันของคุณ"
-              : "จัดการบัญชีผู้ดูแลระบบ (Admin Users)"}
+            จัดการบัญชีผู้ดูแลระบบ (Admin Users)
           </p>
         </div>
         <Button asChild>
@@ -82,4 +67,3 @@ export default async function UsersPage() {
     </div>
   );
 }
-

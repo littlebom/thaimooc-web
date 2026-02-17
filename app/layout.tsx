@@ -21,6 +21,8 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
+import { SettingsProvider } from "@/lib/settings-context";
+
 export default function RootLayout({
   children,
 }: {
@@ -29,8 +31,10 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${sarabun.variable}`} suppressHydrationWarning>
       <body className="font-sans" suppressHydrationWarning>
-        <Preloader />
-        {children}
+        <SettingsProvider>
+          <Preloader />
+          {children}
+        </SettingsProvider>
       </body>
     </html>
   );

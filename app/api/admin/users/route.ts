@@ -9,7 +9,7 @@ export async function GET() {
     await requireSuperAdmin();
 
     const users = await query(
-      `SELECT id, username, name, email, role, isActive, institutionId, lastLogin, createdAt, updatedAt
+      `SELECT id, username, name, email, role, isActive, lastLogin, createdAt, updatedAt
        FROM admin_users
        ORDER BY createdAt DESC`
     );
@@ -109,8 +109,8 @@ export async function POST(request: NextRequest) {
 
     // Create new admin user
     await execute(
-      `INSERT INTO admin_users (id, username, password, name, email, role, isActive, institutionId, createdAt, updatedAt)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO admin_users (id, username, password, name, email, role, isActive, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         body.username,
@@ -119,14 +119,13 @@ export async function POST(request: NextRequest) {
         body.email,
         body.role || "admin",
         body.isActive !== undefined ? body.isActive : true,
-        body.institutionId || null,
         now,
         now
       ]
     );
 
     const newUser = await queryOne(
-      `SELECT id, username, name, email, role, isActive, institutionId, createdAt, updatedAt
+      `SELECT id, username, name, email, role, isActive, createdAt, updatedAt
        FROM admin_users WHERE id = ?`,
       [id]
     );

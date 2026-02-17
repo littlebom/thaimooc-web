@@ -1,5 +1,5 @@
 
-import { query, execute } from '../lib/mysql-direct';
+import { query } from '../lib/mysql-direct';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -72,7 +72,7 @@ async function main() {
 
         try {
             // Try update by courseCode first
-            const result = await execute(
+            const result = await query<{ affectedRows: number }>(
                 'UPDATE courses SET developmentYear = ? WHERE courseCode = ?',
                 [year, courseCode]
             );
@@ -83,7 +83,7 @@ async function main() {
             } else {
                 // Fallback: try update by Title (TH) if courseCode update didn't affect any rows
                 // Note: Title might contain characters that need care, but parameterized query handles it.
-                const result2 = await execute(
+                const result2 = await query<{ affectedRows: number }>(
                     'UPDATE courses SET developmentYear = ? WHERE title = ?',
                     [year, titleTh]
                 );

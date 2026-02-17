@@ -121,7 +121,7 @@ const menuItems: MenuItem[] = [
     title: "Admin Users",
     href: "/admin/users",
     icon: UserCog,
-    allowedRoles: ['super_admin', 'institution_admin'],
+    allowedRoles: ['super_admin'],
   },
   {
     title: "Settings",

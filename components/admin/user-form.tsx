@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,53 +22,23 @@ interface AdminUser {
   email: string;
   role: string;
   isActive: boolean;
-  institutionId?: string;
-}
-
-interface Institution {
-  id: string;
-  name: string;
-  nameEn: string;
 }
 
 interface UserFormProps {
   user?: AdminUser;
-  presetInstitutionId?: string | null;  // For Institution Admin mode
-  isInstitutionView?: boolean;           // Hide role/institution selection for Institution Admin
 }
 
-export function UserForm({ user, presetInstitutionId, isInstitutionView }: UserFormProps) {
+export function UserForm({ user }: UserFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [formData, setFormData] = useState({
     username: user?.username || "",
     password: "",
     name: user?.name || "",
     email: user?.email || "",
-    // For Institution Admin, force role to institution_admin and preset institutionId
-    role: isInstitutionView ? "institution_admin" : (user?.role || "admin"),
+    role: user?.role || "admin",
     isActive: user?.isActive ?? true,
-    institutionId: presetInstitutionId || user?.institutionId || "",
   });
-
-  // Fetch institutions list (only if not in institution view mode)
-  useEffect(() => {
-    if (isInstitutionView) return; // Skip fetching if not needed
-
-    async function fetchInstitutions() {
-      try {
-        const response = await fetch("/api/institutions");
-        const data = await response.json();
-        if (data.success) {
-          setInstitutions(data.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch institutions:", error);
-      }
-    }
-    fetchInstitutions();
-  }, [isInstitutionView]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,38 +147,21 @@ export function UserForm({ user, presetInstitutionId, isInstitutionView }: UserF
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {/* Role selection - hidden for Institution Admin creating users */}
-              {!isInstitutionView ? (
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role *</Label>
-                  <Select
-                    value={formData.role}
-                    onValueChange={(value) => {
-                      handleChange("role", value);
-                      // Clear institutionId if not institution_admin
-                      if (value !== "institution_admin") {
-                        handleChange("institutionId", "");
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="super_admin">Super Admin</SelectItem>
-                      <SelectItem value="institution_admin">Institution Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <div className="px-3 py-2 border rounded-md bg-muted text-muted-foreground">
-                    Institution Admin
-                  </div>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="role">Role *</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => handleChange("role", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="super_admin">Super Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="isActive">สถานะ</Label>
                 <div className="flex items-center space-x-2 pt-2">
@@ -225,31 +178,6 @@ export function UserForm({ user, presetInstitutionId, isInstitutionView }: UserF
                 </div>
               </div>
             </div>
-
-            {/* Institution Dropdown - only show for institution_admin when NOT in institution view */}
-            {formData.role === "institution_admin" && !isInstitutionView && (
-              <div className="space-y-2">
-                <Label htmlFor="institutionId">สถาบัน *</Label>
-                <Select
-                  value={formData.institutionId}
-                  onValueChange={(value) => handleChange("institutionId", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="เลือกสถาบัน..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {institutions.map((inst) => (
-                      <SelectItem key={inst.id} value={inst.id}>
-                        {inst.name} ({inst.nameEn})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-sm text-muted-foreground">
-                  ผู้ใช้จะสามารถจัดการได้เฉพาะ Microsite ของสถาบันที่เลือกเท่านั้น
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 

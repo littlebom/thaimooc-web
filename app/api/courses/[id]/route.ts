@@ -356,6 +356,9 @@ export async function DELETE(
       );
     }
 
+    // Clear cache after delete
+    await redisCache.clearPattern('courses:*');
+
     return NextResponse.json({
       success: true,
       message: "Course deleted successfully",

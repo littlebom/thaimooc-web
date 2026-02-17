@@ -16,6 +16,7 @@ import { BannerDisplay } from "@/components/public/banner-display";
 import { PopupModal } from "@/components/public/popup-modal";
 import { HomeSearchBox } from "@/components/public/home-search-box";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
+import { AIParticleHeroDemo } from "@/components/public/ai-particle-hero-demo";
 
 interface HomePageClientProps {
     categories: Category[];
@@ -67,81 +68,11 @@ export default function HomePageClient({
             {/* Popup Modal */}
             <PopupModal language={language} />
 
-            {/* Hero Carousel */}
-            <BannerDisplay banners={banners} language={language} />
-
-            {/* Stats Section */}
-            <section className="container mx-auto px-4 py-12 -mt-16 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow border-none">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 rounded-xl bg-blue-50">
-                                    <BookOpen className="w-6 h-6 text-blue-600" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">
-                                <AnimatedCounter end={stats?.courses || 0} />
-                            </div>
-                            <p className="text-sm text-gray-600 font-medium">
-                                {t("รายวิชาทั้งหมด", "Total Courses")}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow border-none">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 rounded-xl bg-indigo-50">
-                                    <Users className="w-6 h-6 text-indigo-600" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">
-                                <AnimatedCounter end={stats?.externalLearners || 0} />
-                            </div>
-                            <p className="text-sm text-gray-600 font-medium">
-                                {t("ผู้เรียนทั้งหมด", "Total Learners")}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow border-none">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 rounded-xl bg-yellow-50">
-                                    <Award className="w-6 h-6 text-yellow-600" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">
-                                <AnimatedCounter end={stats?.certificates || 0} />
-                            </div>
-                            <p className="text-sm text-gray-600 font-medium">
-                                {t("ใบประกาศนียบัตร", "Certificates")}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow border-none">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 rounded-xl bg-orange-50">
-                                    <Building2 className="w-6 h-6 text-orange-600" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-1">
-                                <AnimatedCounter end={stats?.institutions || 0} />
-                            </div>
-                            <p className="text-sm text-gray-600 font-medium">
-                                {t("สถาบันการศึกษา", "Institutions")}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-            </section>
+            {/* Hero Carousel replaced with AI Particle Hero */}
+            <AIParticleHeroDemo />
 
             {/* Browse by Category */}
             <section className="container mx-auto px-4 py-12">
-                <HomeSearchBox />
                 <h2 className="text-[1.2rem] font-bold mb-8 mt-8">
                     {t("หมวดหมู่รายวิชา", "Browse by Category")}
                 </h2>
@@ -175,7 +106,7 @@ export default function HomePageClient({
                             {t("รายวิชาใหม่", "New Courses")}
                         </h2>
                     </div>
-                    <Button asChild variant="outline" style={{ borderRadius: '5px' }}>
+                    <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
                         <Link href="/courses">
                             {t("ดูทั้งหมด", "View All")}
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -198,7 +129,7 @@ export default function HomePageClient({
                             {t("รายวิชาได้รับความนิยมสูงสุด", "Popular Courses")}
                         </h2>
                     </div>
-                    <Button asChild variant="outline" style={{ borderRadius: '5px' }}>
+                    <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
                         <Link href="/courses">
                             {t("ดูทั้งหมด", "View All")}
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -218,7 +149,7 @@ export default function HomePageClient({
                     <h2 className="text-[1.2rem] font-bold">
                         {t("ข่าวประชาสัมพันธ์", "News & Announcements")}
                     </h2>
-                    <Button asChild variant="outline" style={{ borderRadius: '5px' }}>
+                    <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
                         <Link href="/news">
                             {t("ดูทั้งหมด", "View All")}
                             <ArrowRight className="ml-2 h-4 w-4" />

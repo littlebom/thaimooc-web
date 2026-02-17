@@ -1,28 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { WebAppSettings } from "@/lib/types";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { SafeIframe } from "@/components/safe-html";
+import { useSettings } from "@/lib/settings-context";
 
 export default function ContactPage() {
   const { t } = useLanguage();
-  const [settings, setSettings] = useState<WebAppSettings | null>(null);
-
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const response = await fetch("/api/settings");
-        const data = await response.json();
-        setSettings(data);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      }
-    }
-    loadData();
-  }, []);
+  const { settings } = useSettings();
 
   return (
     <div className="container mx-auto px-4 py-8">

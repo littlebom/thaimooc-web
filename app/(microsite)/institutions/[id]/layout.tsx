@@ -138,24 +138,7 @@ export default async function MicrositeLayout({
         );
     }
 
-    const { headerItems: dbHeaderItems, footerItems: dbFooterItems } = await getMenus(institution.id);
-
-    let headerItems = dbHeaderItems;
-    let menuItems = dbHeaderItems; // Alias for passed prop if needed, though variable name reuse is cleaner
-
-    // Default Menus Logic
-    if (headerItems.length === 0) {
-        // Note: The Header component automatically prepends /institutions/[id] to relative URLs
-        headerItems = [
-            { id: 'def-1', label: 'หน้าหลัก', labelEn: 'Home', url: `/`, order: 1, target: '_self', menuId: 'default', createdAt: new Date(), updatedAt: new Date() },
-            { id: 'def-2', label: 'รายวิชาทั้งหมด', labelEn: 'All Courses', url: `/courses`, order: 2, target: '_self', menuId: 'default', createdAt: new Date(), updatedAt: new Date() },
-            { id: 'def-3', label: 'ข่าวประชาสัมพันธ์', labelEn: 'News', url: `/news`, order: 3, target: '_self', menuId: 'default', createdAt: new Date(), updatedAt: new Date() },
-            { id: 'def-4', label: 'ติดต่อเรา', labelEn: 'Contact', url: `/contact`, order: 4, target: '_self', menuId: 'default', createdAt: new Date(), updatedAt: new Date() },
-        ];
-    }
-
-    // Reuse header items for footer if footer is empty (standard fallback)
-    const footerItems = dbFooterItems.length > 0 ? dbFooterItems : headerItems;
+    const { headerItems, footerItems } = await getMenus(institution.id);
 
     // Default CSS variables for branding colors
     const style = {
@@ -169,7 +152,7 @@ export default async function MicrositeLayout({
             <main className="flex-1">
                 {children}
             </main>
-            <MicrositeFooter institution={institution} menuItems={footerItems} />
+            <MicrositeFooter institution={institution} menuItems={headerItems} />
         </div>
     );
 }

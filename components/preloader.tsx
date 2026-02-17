@@ -1,19 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-interface PreloaderSettings {
-  enabled: boolean;
-  title: string;
-  subtitle: string;
-  primaryColor: string;
-  backgroundColor: string;
-}
+import { useSettings } from "@/lib/settings-context";
 
 export function Preloader() {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [settings, setSettings] = useState<PreloaderSettings>({
+  const { settings: globalSettings } = useSettings();
+
+  const [settings, setSettings] = useState({
     enabled: true,
     title: "Thai MOOC",
     subtitle: "แพลตฟอร์มการเรียนรู้ออนไลน์",
@@ -22,24 +17,16 @@ export function Preloader() {
   });
 
   useEffect(() => {
-    // Fetch preloader settings
-    async function loadSettings() {
-      try {
-        const response = await fetch("/api/settings");
-        const data = await response.json();
-        setSettings({
-          enabled: data.preloaderEnabled ?? true,
-          title: data.preloaderTitle || "Thai MOOC",
-          subtitle: data.preloaderSubtitle || "แพลตฟอร์มการเรียนรู้ออนไลน์",
-          primaryColor: data.preloaderPrimaryColor || "#2563eb",
-          backgroundColor: data.preloaderBackgroundColor || "#ffffff",
-        });
-      } catch (error) {
-        console.error("Failed to load preloader settings:", error);
-      }
+    if (globalSettings) {
+      setSettings({
+        enabled: globalSettings.preloaderEnabled ?? true,
+        title: globalSettings.preloaderTitle || "Thai MOOC",
+        subtitle: globalSettings.preloaderSubtitle || "แพลตฟอร์มการเรียนรู้ออนไลน์",
+        primaryColor: globalSettings.preloaderPrimaryColor || "#2563eb",
+        backgroundColor: globalSettings.preloaderBackgroundColor || "#ffffff",
+      });
     }
-    loadSettings();
-  }, []);
+  }, [globalSettings]);
 
   useEffect(() => {
     // If preloader is disabled, don't show it

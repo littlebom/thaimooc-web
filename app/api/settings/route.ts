@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryOne, execute } from "@/lib/mysql-direct";
+import { redisCache } from "@/lib/redis-cache";
 import { addCacheHeaders } from "@/lib/cache-headers";
 import fs from 'fs';
 import path from 'path';
@@ -116,9 +117,8 @@ export async function PUT(request: NextRequest) {
           geminiApiKey,
           defaultCourseThumbnail, defaultInstitutionLogo, defaultNewsImage,
           chatbotEnabled, lineQrCodeUrl, lineOfficialId,
-          smtpHost, smtpPort, smtpUser, smtpPassword, smtpFromEmail, smtpSecure,
           createdAt, updatedAt
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           body.siteName || "Thai MOOC",
@@ -141,12 +141,6 @@ export async function PUT(request: NextRequest) {
           body.chatbotEnabled ?? true,
           body.lineQrCodeUrl || null,
           body.lineOfficialId || null,
-          body.smtpHost || null,
-          body.smtpPort || null,
-          body.smtpUser || null,
-          body.smtpPassword || null,
-          body.smtpFromEmail || null,
-          body.smtpSecure ?? false,
           now,
           now
         ]
@@ -262,29 +256,13 @@ export async function PUT(request: NextRequest) {
         updates.push('lineOfficialId = ?');
         values.push(body.lineOfficialId);
       }
-      if (body.smtpHost !== undefined) {
-        updates.push('smtpHost = ?');
-        values.push(body.smtpHost);
+      if (body.primaryColor !== undefined) {
+        updates.push('primaryColor = ?');
+        values.push(body.primaryColor);
       }
-      if (body.smtpPort !== undefined) {
-        updates.push('smtpPort = ?');
-        values.push(body.smtpPort);
-      }
-      if (body.smtpUser !== undefined) {
-        updates.push('smtpUser = ?');
-        values.push(body.smtpUser);
-      }
-      if (body.smtpPassword !== undefined) {
-        updates.push('smtpPassword = ?');
-        values.push(body.smtpPassword);
-      }
-      if (body.smtpFromEmail !== undefined) {
-        updates.push('smtpFromEmail = ?');
-        values.push(body.smtpFromEmail);
-      }
-      if (body.smtpSecure !== undefined) {
-        updates.push('smtpSecure = ?');
-        values.push(body.smtpSecure);
+      if (body.secondaryColor !== undefined) {
+        updates.push('secondaryColor = ?');
+        values.push(body.secondaryColor);
       }
 
       updates.push('updatedAt = ?');
@@ -299,6 +277,9 @@ export async function PUT(request: NextRequest) {
 
       settings = await queryOne('SELECT * FROM webapp_settings WHERE id = ?', [settings.id]);
     }
+
+    // Clear cache after settings update
+    await redisCache.clearAll();
 
     return NextResponse.json({
       success: true,

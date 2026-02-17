@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { queryOne } from "@/lib/mysql-direct";
 import { notFound, redirect } from "next/navigation";
-import { getSession, isSuperAdmin, isInstitutionAdmin, hasInstitutionAccess } from "@/lib/auth";
+import { requireSuperAdmin } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function getUser(id: string) {
   const user = await queryOne<any>(
-    'SELECT id, username, name, email, role, isActive, institutionId FROM admin_users WHERE id = ?',
+    'SELECT id, username, name, email, role, isActive FROM admin_users WHERE id = ?',
     [id]
   );
 
@@ -25,39 +25,31 @@ export default async function EditUserPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getSession();
-
-  if (!session) {
+  // Check if user is Super Admin
+  try {
+    await requireSuperAdmin();
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Forbidden')) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-red-600">Access Denied</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                คุณไม่มีสิทธิ์เข้าถึงหน้านี้ เฉพาะ Super Admin เท่านั้นที่สามารถจัดการ Admin Users ได้
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
     redirect('/admin/login');
   }
 
   const { id } = await params;
   const user = await getUser(id);
-
-  // Check permissions: Super Admin can edit all, Institution Admin only own institution
-  const canAccess = isSuperAdmin(session) ||
-    (isInstitutionAdmin(session) && hasInstitutionAccess(session, user.institutionId));
-
-  if (!canAccess) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              คุณไม่มีสิทธิ์แก้ไขผู้ใช้นี้
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // For Institution Admin, preset the institutionId
-  const isInstitutionView = isInstitutionAdmin(session) && !isSuperAdmin(session);
-  const presetInstitutionId = isInstitutionView ? session.institutionId : undefined;
 
   return (
     <div className="space-y-6">
@@ -75,8 +67,7 @@ export default async function EditUserPage({
         </div>
       </div>
 
-      <UserForm user={user} presetInstitutionId={presetInstitutionId} isInstitutionView={isInstitutionView} />
+      <UserForm user={user} />
     </div>
   );
 }
-

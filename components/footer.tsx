@@ -6,23 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { WebAppSettings } from "@/lib/types";
+import { useSettings } from "@/lib/settings-context";
 
 export function Footer() {
   const { t } = useLanguage();
-  const [settings, setSettings] = useState<WebAppSettings | null>(null);
-
-  useEffect(() => {
-    async function loadSettings() {
-      try {
-        const response = await fetch("/api/settings");
-        const data = await response.json();
-        setSettings(data);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      }
-    }
-    loadSettings();
-  }, []);
+  const { settings } = useSettings();
 
   return (
     <footer className="border-t bg-gray-50 mt-auto">

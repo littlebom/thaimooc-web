@@ -7,7 +7,7 @@ import { useLanguage } from "@/lib/language-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getImagePlaceholder } from "@/lib/data";
+import { getImageUrl } from "@/lib/utils";
 import { CourseSkillCard } from "@/components/course/course-skill-card";
 import type { CourseWithRelations, Category, Instructor, Institution } from "@/lib/types";
 import {
@@ -107,22 +107,12 @@ export default function CourseDetailsPageClient({
 
     // Get course image URL - support both URL and placeholder ID
     const getCourseImageUrl = () => {
-        if (!course?.imageId) return '/placeholder.png';
-        if (course.imageId.startsWith('http://') || course.imageId.startsWith('https://') || course.imageId.startsWith('/')) {
-            return course.imageId;
-        }
-        const placeholder = getImagePlaceholder(course.imageId);
-        return placeholder?.url || '/placeholder.png';
+        return getImageUrl(course?.imageId);
     };
 
     // Get instructor image URL - support both URL and placeholder ID
     const getInstructorImageUrl = (imageUrl?: string | null) => {
-        if (!imageUrl) return '/placeholder.png';
-        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('/')) {
-            return imageUrl;
-        }
-        const placeholder = getImagePlaceholder(imageUrl);
-        return placeholder?.url || '/placeholder.png';
+        return getImageUrl(imageUrl);
     };
 
     const toggleTopic = (topicId: string) => {

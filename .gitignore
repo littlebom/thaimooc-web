@@ -38,5 +38,10 @@ next-env.d.ts
 *.sql
 *.tar.gz
 /backups
+/backup/
 /scripts/seed-data.json
 /.node_runtime/
+schema.txt
+migrate-theme-colors.*
+export-settings.js
+/public/uploads/

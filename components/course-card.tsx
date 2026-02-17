@@ -101,7 +101,7 @@ export function CourseCard({
                 </CardHeader>
                 <CardContent className="mt-auto">
                     <div className="flex items-center justify-between text-xs">
-                        <Badge variant="secondary">{course.level}</Badge>
+                        <Badge variant="default" className="rounded-[5px]">{course.level}</Badge>
                         <span className="text-muted-foreground">
                             {course.durationHours}{" "}
                             {language === "th" ? "ชั่วโมง" : "hours"}

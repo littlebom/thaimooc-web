@@ -52,6 +52,13 @@ class MemoryCache {
   }
 
   /**
+   * Clear all cache entries
+   */
+  async clearAll(): Promise<void> {
+    apiCache.clear();
+  }
+
+  /**
    * Get cache stats
    */
   async getStats() {

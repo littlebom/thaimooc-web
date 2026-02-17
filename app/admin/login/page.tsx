@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Lock, User } from "lucide-react";
-import type { WebAppSettings } from "@/lib/types";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -14,20 +12,6 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState<WebAppSettings | null>(null);
-
-  useEffect(() => {
-    async function loadSettings() {
-      try {
-        const response = await fetch("/api/settings");
-        const data = await response.json();
-        setSettings(data);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      }
-    }
-    loadSettings();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,23 +60,11 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto flex items-center justify-center">
-            {settings?.siteLogo ? (
-              <div className="relative h-16 w-48">
-                <Image
-                  src={settings.siteLogo}
-                  alt={settings.siteName || "Thai MOOC"}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            ) : (
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                <BookOpen className="h-8 w-8 text-white" />
-              </div>
-            )}
+          <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+            <BookOpen className="h-8 w-8 text-white" />
           </div>
           <div>
+            <CardTitle className="text-3xl font-bold">Thai MOOC</CardTitle>
             <CardDescription className="text-lg mt-2">
               เข้าสู่ระบบจัดการ Admin
             </CardDescription>

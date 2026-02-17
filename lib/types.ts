@@ -214,12 +214,8 @@ export interface WebAppSettings {
   chatbotEnabled?: boolean;
   lineQrCodeUrl?: string | null;
   lineOfficialId?: string | null;
-  smtpHost?: string | null;
-  smtpPort?: number | null;
-  smtpUser?: string | null;
-  smtpPassword?: string | null;
-  smtpFromEmail?: string | null;
-  smtpSecure?: boolean;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -290,3 +286,23 @@ export interface CourseSkills {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Hard Skill Domains (6 axes)
+export const HARD_SKILL_DOMAINS = {
+  H1: "Data Science & AI Fluency",
+  H2: "Digital Development & Security",
+  H3: "Technical Project & Process Mgmt",
+  H4: "Financial & Strategic Modeling",
+  H5: "Specialized Technical Operations",
+  H6: "Regulatory & Compliance Skills",
+};
+
+// Soft Skill Domains (6 axes)
+export const SOFT_SKILL_DOMAINS = {
+  S1: "Analytical & Critical Thinking",
+  S2: "Communication & Collaboration",
+  S3: "Leadership & Social Influence",
+  S4: "Adaptability & Resilience",
+  S5: "Creativity & Initiative",
+  S6: "Customer & Service Orientation",
+};

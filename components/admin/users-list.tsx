@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Shield, ShieldCheck, Building2 } from "lucide-react";
+import { Pencil, Trash2, Shield, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface AdminUser {
@@ -22,8 +22,6 @@ interface AdminUser {
   email: string;
   role: string;
   isActive: boolean;
-  institutionId?: string;
-  institutionName?: string;
   lastLogin: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -38,12 +36,9 @@ export function UsersList({ initialUsers }: UsersListProps) {
   const [users, setUsers] = useState<AdminUser[]>(initialUsers);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const getRoleBadge = (role: string, institutionId?: string) => {
+  const getRoleBadge = (role: string) => {
     if (role === "super_admin") {
       return <Badge variant="destructive" className="gap-1"><ShieldCheck className="w-3 h-3" />Super Admin</Badge>;
-    }
-    if (role === "institution_admin") {
-      return <Badge variant="outline" className="gap-1 border-blue-500 text-blue-600"><Building2 className="w-3 h-3" />Institution Admin</Badge>;
     }
     return <Badge variant="secondary" className="gap-1"><Shield className="w-3 h-3" />Admin</Badge>;
   };
@@ -126,14 +121,7 @@ export function UsersList({ initialUsers }: UsersListProps) {
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  {getRoleBadge(user.role, user.institutionId)}
-                  {user.role === "institution_admin" && user.institutionId && (
-                    <span className="text-xs text-muted-foreground">ID: {user.institutionId}</span>
-                  )}
-                </div>
-              </TableCell>
+              <TableCell>{getRoleBadge(user.role)}</TableCell>
               <TableCell>{getStatusBadge(user.isActive)}</TableCell>
               <TableCell>{formatDate(user.lastLogin)}</TableCell>
               <TableCell className="text-right">

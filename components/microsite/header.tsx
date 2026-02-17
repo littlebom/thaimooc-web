@@ -82,6 +82,17 @@ export function MicrositeHeader({ institution, menuItems }: MicrositeHeaderProps
                         {/* Action Buttons */}
                         <div className="flex items-center gap-2 border-l pl-6">
                             <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setLanguage(language === "th" ? "en" : "th")}
+                                className="flex items-center gap-2"
+                                style={{ borderRadius: '5px' }}
+                            >
+                                <Globe className="h-4 w-4" />
+                                <span className="hidden sm:inline">{language === "th" ? "EN" : "TH"}</span>
+                            </Button>
+
+                            <Button
                                 asChild
                                 variant="default"
                                 size="sm"
@@ -95,17 +106,6 @@ export function MicrositeHeader({ institution, menuItems }: MicrositeHeaderProps
                                     <Blocks className="h-4 w-4" />
                                     {t("เข้าห้องเรียน", "My Classroom")}
                                 </Link>
-                            </Button>
-
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setLanguage(language === "th" ? "en" : "th")}
-                                className="flex items-center gap-2"
-                                style={{ borderRadius: '5px' }}
-                            >
-                                <Globe className="h-4 w-4" />
-                                <span className="hidden sm:inline">{language === "th" ? "EN" : "TH"}</span>
                             </Button>
                         </div>
                     </div>
@@ -156,6 +156,19 @@ export function MicrositeHeader({ institution, menuItems }: MicrositeHeaderProps
                     {/* Mobile Actions */}
                     <div className="border-t pt-4 space-y-3">
                         <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setLanguage(language === "th" ? "en" : "th");
+                                setIsMobileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center justify-center gap-2"
+                            style={{ borderRadius: '5px' }}
+                        >
+                            <Globe className="h-4 w-4" />
+                            {t("เปลี่ยนเป็นภาษาอังกฤษ", "Switch to Thai")}
+                        </Button>
+                        <Button
                             asChild
                             variant="default"
                             size="sm"
@@ -169,19 +182,6 @@ export function MicrositeHeader({ institution, menuItems }: MicrositeHeaderProps
                                 <Blocks className="h-4 w-4" />
                                 {t("เข้าห้องเรียน", "My Classroom")}
                             </Link>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                                setLanguage(language === "th" ? "en" : "th");
-                                setIsMobileMenuOpen(false);
-                            }}
-                            className="w-full flex items-center justify-center gap-2"
-                            style={{ borderRadius: '5px' }}
-                        >
-                            <Globe className="h-4 w-4" />
-                            {t("เปลี่ยนเป็นภาษาอังกฤษ", "Switch to Thai")}
                         </Button>
                     </div>
                 </div>

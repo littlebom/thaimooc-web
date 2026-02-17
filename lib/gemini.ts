@@ -1,25 +1,7 @@
 // Gemini AI Integration using REST API directly
 // No SDK dependency - works with gemini-1.5-flash and gemini-1.5-pro
 
-// Hard Skill Domains (6 axes)
-export const HARD_SKILL_DOMAINS = {
-  H1: "Data Science & AI Fluency",
-  H2: "Digital Development & Security",
-  H3: "Technical Project & Process Mgmt",
-  H4: "Financial & Strategic Modeling",
-  H5: "Specialized Technical Operations",
-  H6: "Regulatory & Compliance Skills",
-};
-
-// Soft Skill Domains (6 axes)
-export const SOFT_SKILL_DOMAINS = {
-  S1: "Analytical & Critical Thinking",
-  S2: "Communication & Collaboration",
-  S3: "Leadership & Social Influence",
-  S4: "Adaptability & Resilience",
-  S5: "Creativity & Initiative",
-  S6: "Customer & Service Orientation",
-};
+import { HARD_SKILL_DOMAINS, SOFT_SKILL_DOMAINS } from "./types";
 
 export interface CourseData {
   id: string;

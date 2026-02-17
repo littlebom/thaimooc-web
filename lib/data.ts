@@ -501,6 +501,8 @@ export async function getSettings(): Promise<types.WebAppSettings> {
       youtubeUrl: null,
       instagramUrl: null,
       lineUrl: null,
+      primaryColor: "#2563eb",
+      secondaryColor: "#64748b",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -515,11 +517,13 @@ export async function updateSettings(data: Partial<types.WebAppSettings>): Promi
     'SELECT * FROM webapp_settings LIMIT 1'
   );
 
+  const now = new Date();
+
   if (!settings) {
     // Create new settings
     const id = `settings-${Date.now()}`;
     await execute(
-      'INSERT INTO webapp_settings (id, siteName, siteLogo, contactEmail, contactPhone, address, aboutUs, aboutUsEn, mapUrl, facebookUrl, twitterUrl, youtubeUrl, instagramUrl, lineUrl, geminiApiKey, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
+      'INSERT INTO webapp_settings (id, siteName, siteLogo, contactEmail, contactPhone, address, aboutUs, aboutUsEn, mapUrl, facebookUrl, twitterUrl, youtubeUrl, instagramUrl, lineUrl, geminiApiKey, primaryColor, secondaryColor, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
       [
         id,
         data.siteName || "Thai MOOC",
@@ -534,9 +538,10 @@ export async function updateSettings(data: Partial<types.WebAppSettings>): Promi
         data.twitterUrl || null,
         data.youtubeUrl || null,
         data.instagramUrl || null,
-        data.instagramUrl || null,
         data.lineUrl || null,
         data.geminiApiKey || null,
+        data.primaryColor || "#2563eb",
+        data.secondaryColor || "#64748b",
       ]
     );
     settings = (await queryOne<types.WebAppSettings>(
@@ -579,6 +584,14 @@ export async function updateSettings(data: Partial<types.WebAppSettings>): Promi
     if (data.mapUrl !== undefined) {
       updates.push('mapUrl = ?');
       values.push(data.mapUrl);
+    }
+    if (data.primaryColor !== undefined) {
+      updates.push('primaryColor = ?');
+      values.push(data.primaryColor);
+    }
+    if (data.secondaryColor !== undefined) {
+      updates.push('secondaryColor = ?');
+      values.push(data.secondaryColor);
     }
     if (data.facebookUrl !== undefined) {
       updates.push('facebookUrl = ?');

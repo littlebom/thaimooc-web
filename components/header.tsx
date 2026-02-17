@@ -7,24 +7,12 @@ import { Button } from "./ui/button";
 import { BookOpen, Globe, Blocks, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { WebAppSettings } from "@/lib/types";
+import { useSettings } from "@/lib/settings-context";
 
 export function Header() {
   const { language, setLanguage, t } = useLanguage();
-  const [settings, setSettings] = useState<WebAppSettings | null>(null);
+  const { settings } = useSettings();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    async function loadSettings() {
-      try {
-        const response = await fetch("/api/settings");
-        const data = await response.json();
-        setSettings(data);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      }
-    }
-    loadSettings();
-  }, []);
 
   return (
     <>
@@ -90,20 +78,7 @@ export function Header() {
 
             <div className="flex items-center gap-3">
               <Button
-                asChild
-                variant="default"
-                size="sm"
-                className="hidden sm:flex items-center gap-2"
-                style={{ borderRadius: '5px' }}
-              >
-                <Link href="https://learn.thaimooc.ac.th/dashboard" target="_blank" rel="noopener noreferrer">
-                  <Blocks className="h-4 w-4" />
-                  {t("เข้าห้องเรียน", "My Classroom")}
-                </Link>
-              </Button>
-
-              <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => setLanguage(language === "th" ? "en" : "th")}
                 className="flex items-center gap-2"
@@ -111,6 +86,19 @@ export function Header() {
               >
                 <Globe className="h-4 w-4" />
                 <span className="hidden sm:inline">{language === "th" ? "EN" : "TH"}</span>
+              </Button>
+
+              <Button
+                asChild
+                variant="default"
+                size="sm"
+                className="hidden sm:flex items-center gap-2"
+                style={{ borderRadius: '5px', backgroundColor: '#224188' }}
+              >
+                <Link href="https://learn.thaimooc.ac.th/dashboard" target="_blank" rel="noopener noreferrer">
+                  <Blocks className="h-4 w-4" />
+                  {t("เข้าห้องเรียน", "My Classroom")}
+                </Link>
               </Button>
 
               {/* Mobile Menu Button */}
@@ -229,19 +217,7 @@ export function Header() {
           {/* Footer Actions */}
           <div className="p-4 border-t space-y-3">
             <Button
-              asChild
-              variant="default"
-              size="sm"
-              className="w-full flex items-center justify-center gap-2"
-              style={{ borderRadius: '5px' }}
-            >
-              <Link href="https://learn.thaimooc.ac.th/dashboard" target="_blank" rel="noopener noreferrer">
-                <Blocks className="h-4 w-4" />
-                {t("เข้าห้องเรียน", "My Classroom")}
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => {
                 setLanguage(language === "th" ? "en" : "th");
@@ -252,6 +228,18 @@ export function Header() {
             >
               <Globe className="h-4 w-4" />
               {t("เปลี่ยนเป็นภาษาอังกฤษ", "Switch to Thai")}
+            </Button>
+            <Button
+              asChild
+              variant="default"
+              size="sm"
+              className="w-full flex items-center justify-center gap-2"
+              style={{ borderRadius: '5px', backgroundColor: '#224188' }}
+            >
+              <Link href="https://learn.thaimooc.ac.th/dashboard" target="_blank" rel="noopener noreferrer">
+                <Blocks className="h-4 w-4" />
+                {t("เข้าห้องเรียน", "My Classroom")}
+              </Link>
             </Button>
           </div>
         </div>

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { HARD_SKILL_DOMAINS, SOFT_SKILL_DOMAINS } from "@/lib/gemini";
+import { HARD_SKILL_DOMAINS, SOFT_SKILL_DOMAINS } from "@/lib/types";
 
 interface SkillData {
   H1?: number;
