@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Users, Award, Building2, Search as SearchIcon } from "lucide-react";
+import { ArrowRight, Library, Users, Award, Building2, Search as SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ interface Particle {
     originX: number;
     originY: number;
     originZ: number;
+    blinkSpeed?: number;
 }
 
 export function AIParticleHeroDemo() {
@@ -79,7 +80,7 @@ export function AIParticleHeroDemo() {
             canvasRef.current!.height = height;
 
             particles = [];
-            const particleCount = 450; // Optimized for performance while maintaining density
+            const particleCount = 280; // Slightly reduced for plexus performance
             const sphereRadius = Math.min(width, height) * 0.42;
 
             for (let i = 0; i < particleCount; i++) {
@@ -90,21 +91,22 @@ export function AIParticleHeroDemo() {
                 const oy = sphereRadius * Math.sin(theta) * Math.sin(phi);
                 const oz = sphereRadius * Math.cos(phi);
 
-                // Original Color Distribution (Pink/Orange Zone vs Cyan/White Zone)
+                // Digital/Cyber Color Palette - Matched to Background Glows
                 let color = "#ffffff";
-                if (ox < 0 && oy < 0) color = "#ff2d55"; // Vibrant Pink
-                else if (ox < 0 && oy > 0) color = "#ff9500"; // Vibrant Orange
-                else if (ox > 0 && oy < 0) color = "#5ac8fa"; // Azure Blue
-                else if (oz > 0) color = "#ffffff"; // White highlights
-                else color = "#5856d6"; // Deep Purple
+                const rand = Math.random();
+                if (rand > 0.7) color = "#1d82b7"; // Themed Blue (from glow)
+                else if (rand > 0.4) color = "#f75618"; // Themed Orange (from glow)
+                else if (rand > 0.2) color = "#fcb478"; // Themed Peach (from glow)
+                else color = "#ffffff"; // White highlights
 
                 particles.push({
                     x: ox, y: oy, z: oz,
                     originX: ox, originY: oy, originZ: oz,
                     vx: 0, vy: 0, vz: 0,
-                    size: Math.random() * 2 + 0.8,
-                    shape: Math.random() > 0.6 ? 'square' : 'circle',
+                    size: Math.random() * 1.5 + 0.5,
+                    shape: Math.random() > 0.3 ? 'square' : 'circle',
                     color,
+                    blinkSpeed: Math.random() > 0.8 ? (Math.random() * 0.05 + 0.02) : undefined,
                 });
             }
         };
@@ -141,12 +143,46 @@ export function AIParticleHeroDemo() {
             const centerX = width * 0.72;
             const centerY = height * 0.5;
 
-            // Still sort for depth, but it's cheaper without ctx.filter
             particles.sort((a, b) => b.z - a.z);
 
+            // Plexus Effect: Draw lines between nearby particles
+            const maxDistance = 90; // Slightly tighter
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dz = p1.z - p2.z;
+                    const distSq = dx * dx + dy * dy + dz * dz;
+
+                    if (distSq < maxDistance * maxDistance) {
+                        const dist = Math.sqrt(distSq);
+                        const focalLength = 600;
+                        const scale1 = focalLength / (focalLength + p1.z);
+                        const scale2 = focalLength / (focalLength + p2.z);
+
+                        const px1 = p1.x * scale1 + centerX;
+                        const py1 = p1.y * scale1 + centerY;
+                        const px2 = p2.x * scale2 + centerX;
+                        const py2 = p2.y * scale2 + centerY;
+
+                        const opacity = (1 - dist / maxDistance) * 0.12 * Math.min(scale1, scale2);
+                        // Use a mix of white/blue for lines
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                        ctx.lineWidth = 0.4 * Math.min(scale1, scale2);
+                        ctx.beginPath();
+                        ctx.moveTo(px1, py1);
+                        ctx.lineTo(px2, py2);
+                        ctx.stroke();
+                    }
+                }
+            }
+
             particles.forEach(p => {
-                rotateY(p, 0.00025); // Reduced from 0.0005
-                rotateX(p, 0.0001); // Reduced from 0.0002
+                rotateY(p, 0.00025);
+                rotateX(p, 0.0001);
 
                 if (mouse.current.active) {
                     const dx = (mouse.current.x - centerX) - p.x;
@@ -154,8 +190,8 @@ export function AIParticleHeroDemo() {
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 320) {
                         const force = (320 - dist) / 320;
-                        p.vx += dx * force * 0.015;
-                        p.vy += dy * force * 0.015;
+                        p.vx += dx * force * 0.02; // Snappier
+                        p.vy += dy * force * 0.02;
                     }
                 }
 
@@ -177,11 +213,15 @@ export function AIParticleHeroDemo() {
 
                 if (p.z > -focalLength) {
                     ctx.save();
-
-                    // No ctx.filter (blur) for maximum performance
                     ctx.fillStyle = p.color;
-                    // Use scale and alpha for depth effect
-                    ctx.globalAlpha = Math.max(0.1, scale * 0.85);
+
+                    let baseAlpha = Math.max(0.1, scale * 0.85);
+                    if (p.blinkSpeed) {
+                        // Create a smooth blinking effect using sine
+                        const blink = (Math.sin(Date.now() * p.blinkSpeed) + 1) / 2;
+                        baseAlpha *= (0.3 + blink * 0.7);
+                    }
+                    ctx.globalAlpha = baseAlpha;
 
                     if (p.shape === 'circle') {
                         ctx.beginPath();
@@ -191,7 +231,6 @@ export function AIParticleHeroDemo() {
                         const s = p.size * scale * 1.4;
                         ctx.fillRect(px - s / 2, py - s / 2, s, s);
                     }
-
                     ctx.restore();
                 }
             });
@@ -250,7 +289,7 @@ export function AIParticleHeroDemo() {
                         <h1 className="text-4xl md:text-[90px] font-semibold leading-[0.95] mb-6 landscape:mb-4 md:mb-12 tracking-tighter">
                             <span className="relative inline-block">
                                 THAI-MOOC
-                                <div className="absolute bottom-[-8px] left-0 w-full h-[15%] bg-gradient-to-r from-orange-500 to-pink-500 -z-10 opacity-60 blur-[1px]"></div>
+                                <div className="absolute bottom-[-14px] left-0 w-full h-[15%] bg-gradient-to-r from-orange-500 to-pink-500 -z-10 opacity-60 blur-[1px]"></div>
                             </span> <br />
                             <span className="tracking-[0.03em]">Ecosystem</span>
                         </h1>
@@ -293,7 +332,7 @@ export function AIParticleHeroDemo() {
                     {/* Course Card */}
                     <div className="flex items-center gap-4 p-5 rounded-[5px] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:bg-white/10 transition-all duration-300">
                         <div className="p-3 rounded-[5px] bg-blue-500/20 text-blue-400">
-                            <BookOpen className="w-6 h-6" />
+                            <Library className="w-6 h-6" />
                         </div>
                         <div>
                             <div className="text-2xl font-bold leading-none mb-1">
