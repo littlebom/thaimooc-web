@@ -74,28 +74,58 @@ export default function HomePageClient({
             <AIParticleHeroDemo />
 
             {/* Browse by Category */}
-            <section className="container mx-auto px-4 py-12">
-                <h2 className="text-[1.2rem] font-bold mb-8 mt-8">
-                    {t("หมวดหมู่รายวิชา", "Browse by Category")}
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    {categories.map((category) => {
-                        const IconComponent = getIconComponent(category.icon);
-                        return (
-                            <Link key={category.id} href={`/courses?category=${category.id}`}>
-                                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full group">
-                                    <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                                            <IconComponent className="w-8 h-8 text-primary" strokeWidth={1.5} />
-                                        </div>
-                                        <h3 className="font-semibold text-sm">
-                                            {language === "th" ? category.name : category.nameEn}
-                                        </h3>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        );
-                    })}
+            <section className="relative w-full py-16 bg-[#f8fafc]">
+                {/* Subtle Background Pattern */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'控制\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="h-8 w-1 bg-primary rounded-full" />
+                        <h2 className="text-[1.2rem] font-bold text-slate-900">
+                            {t("หมวดหมู่รายวิชา", "Browse by Category")}
+                        </h2>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                        {categories.map((category, index) => {
+                            const IconComponent = getIconComponent(category.icon);
+                            // Define distinct gradients for variety (12 distinct sets)
+                            const gradients = [
+                                "from-blue-500/20 to-cyan-500/10 text-blue-600",
+                                "from-indigo-500/20 to-purple-500/10 text-indigo-600",
+                                "from-emerald-500/20 to-teal-500/10 text-emerald-600",
+                                "from-orange-500/20 to-yellow-500/10 text-orange-600",
+                                "from-pink-500/20 to-rose-500/10 text-pink-600",
+                                "from-violet-500/20 to-fuchsia-500/10 text-violet-600",
+                                "from-amber-500/20 to-yellow-400/10 text-amber-600",
+                                "from-lime-500/20 to-green-500/10 text-lime-600",
+                                "from-sky-500/20 to-blue-400/10 text-sky-600",
+                                "from-red-500/20 to-orange-400/10 text-red-600",
+                                "from-purple-500/20 to-pink-500/10 text-purple-600",
+                                "from-slate-500/20 to-slate-800/10 text-slate-700",
+                            ];
+                            const currentGradient = gradients[index % gradients.length];
+
+                            return (
+                                <Link key={category.id} href={`/courses?category=${category.id}`} className="group h-full">
+                                    <Card className="h-full bg-white/60 backdrop-blur-md border border-white/20 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/5 group-hover:-translate-y-2 group-hover:border-primary/20 transition-all duration-300 overflow-hidden relative">
+                                        {/* Subtle Glow Background */}
+                                        <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
+
+                                        <CardContent className="flex flex-col items-center justify-center p-8 text-center relative z-10">
+                                            <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${currentGradient.split(' ').slice(0, 2).join(' ')} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
+                                                <IconComponent className={`w-8 h-8 ${currentGradient.split(' ')[2]}`} strokeWidth={1.5} />
+                                            </div>
+                                            <h3 className="font-bold text-sm text-slate-800 group-hover:text-primary transition-colors line-clamp-2">
+                                                {language === "th" ? category.name : category.nameEn}
+                                            </h3>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </div>
             </section>
 

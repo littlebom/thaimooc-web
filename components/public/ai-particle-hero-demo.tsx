@@ -145,8 +145,8 @@ export function AIParticleHeroDemo() {
             particles.sort((a, b) => b.z - a.z);
 
             particles.forEach(p => {
-                rotateY(p, 0.002);
-                rotateX(p, 0.0008);
+                rotateY(p, 0.00025); // Reduced from 0.0005
+                rotateX(p, 0.0001); // Reduced from 0.0002
 
                 if (mouse.current.active) {
                     const dx = (mouse.current.x - centerX) - p.x;
