@@ -16,6 +16,7 @@ import { Search } from "lucide-react";
 import { getImageUrl } from "@/lib/utils";
 import { getIconComponent } from "@/lib/icon-map";
 import { Pagination } from "@/components/pagination";
+import { CourseCardLightTech } from "@/components/course-card-light-tech";
 
 interface CoursesPageClientProps {
     initialCourses: CourseWithRelations[];
@@ -272,91 +273,15 @@ function CoursesPageContent({
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {paginatedCourses?.map((course) => (
-                                    <Link key={course.id} href={`/courses/${(course as any).courseCode || course.id}`}>
-                                        <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
-                                            <div className="relative h-48">
-                                                <SafeImage
-                                                    src={getImageUrl(course.imageId)}
-                                                    alt={language === "th" ? course.title : course.titleEn}
-                                                    fill
-                                                    className="object-cover rounded-t-lg"
-                                                    fallbackType="course"
-                                                />
-                                                {/* Course Type Icons */}
-                                                {(() => {
-                                                    const types = course.courseCourseTypes || course.course_course_types || [];
-                                                    if (types.length > 0 && courseTypes.length > 0) {
-                                                        const courseTypesToShow = types.slice(0, 3);
-                                                        const icons = courseTypesToShow.map((ct) => {
-                                                            const courseType = courseTypes.find(t => t.id === ct.courseTypeId);
-                                                            if (!courseType || !courseType.icon) return null;
-                                                            const IconComponent = getIconComponent(courseType.icon);
-                                                            return { IconComponent, name: language === "th" ? courseType.name : courseType.nameEn };
-                                                        }).filter(Boolean);
-
-                                                        if (icons.length === 0) return null;
-
-                                                        return (
-                                                            <div className="absolute top-2 right-2 flex gap-1">
-                                                                {icons.map((item, index) => {
-                                                                    const Icon = item!.IconComponent;
-                                                                    return (
-                                                                        <div
-                                                                            key={index}
-                                                                            className="bg-primary/90 text-white backdrop-blur-sm rounded-full p-2 flex items-center justify-center"
-                                                                            title={item!.name}
-                                                                        >
-                                                                            <Icon className="h-4 w-4" />
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                })()}
-                                            </div>
-                                            <CardHeader className="flex-grow">
-                                                <CardTitle className="line-clamp-2 text-base">
-                                                    {language === "th" ? course.title : course.titleEn}
-                                                </CardTitle>
-                                                {institutions?.find(inst => inst.id === course.institutionId) && (
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        {language === "th"
-                                                            ? institutions?.find(inst => inst.id === course.institutionId)?.name
-                                                            : institutions?.find(inst => inst.id === course.institutionId)?.nameEn}
-                                                    </p>
-                                                )}
-                                                {(() => {
-                                                    const courseCategories = course.courseCategories || course.course_categories || [];
-                                                    const categoryNames = courseCategories
-                                                        .map((cc) => {
-                                                            const category = categories.find(c => c.id === cc.categoryId);
-                                                            return category ? (language === "th" ? category.name : category.nameEn) : null;
-                                                        })
-                                                        .filter(Boolean)
-                                                        .join(", ");
-
-                                                    if (!categoryNames) return null;
-
-                                                    return (
-                                                        <p className="text-xs text-muted-foreground mt-1">
-                                                            {categoryNames}
-                                                        </p>
-                                                    );
-                                                })()}
-                                            </CardHeader>
-                                            <CardContent className="mt-auto">
-                                                <div className="flex items-center justify-between text-xs">
-                                                    <Badge variant="secondary">{course.level}</Badge>
-                                                    <span className="text-muted-foreground">
-                                                        {course.durationHours}{" "}
-                                                        {language === "th" ? "ชั่วโมง" : "hours"}
-                                                    </span>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
+                                    <div key={course.id} className="h-full">
+                                        <CourseCardLightTech
+                                            course={course}
+                                            language={language}
+                                            institutions={institutions}
+                                            courseTypes={courseTypes}
+                                            categories={categories}
+                                        />
+                                    </div>
                                 ))}
                             </div>
 

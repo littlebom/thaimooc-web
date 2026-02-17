@@ -222,10 +222,12 @@ export async function deleteInstructor(id: string): Promise<boolean> {
 // Courses
 export async function getCourses(): Promise<types.Course[]> {
   const courses = await query<any>(
-    `SELECT c.*,
-     GROUP_CONCAT(DISTINCT cc.categoryId) as categoryIds
+    `SELECT c.*, 
+     GROUP_CONCAT(DISTINCT cc.categoryId) as categoryIds,
+     GROUP_CONCAT(DISTINCT cct.courseTypeId) as courseTypeIds
      FROM courses c
      LEFT JOIN course_categories cc ON c.id = cc.courseId
+     LEFT JOIN course_course_types cct ON c.id = cct.courseId
      GROUP BY c.id
      ORDER BY c.createdAt DESC`
   );
@@ -233,6 +235,7 @@ export async function getCourses(): Promise<types.Course[]> {
   return courses.map(course => ({
     ...course,
     categoryIds: course.categoryIds ? course.categoryIds.split(',') : [],
+    courseTypeIds: course.courseTypeIds ? course.courseTypeIds.split(',') : [],
   }));
 }
 

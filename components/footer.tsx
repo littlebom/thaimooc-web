@@ -13,28 +13,34 @@ export function Footer() {
   const { settings } = useSettings();
 
   return (
-    <footer className="border-t bg-gray-50 mt-auto">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative bg-[#0c1c3b] mt-auto border-t border-white/10 overflow-hidden text-slate-300 font-poppins">
+      {/* Ambient Glows */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-50%] left-[-20%] w-[80%] h-[80%] bg-[radial-gradient(circle,rgba(29,130,183,0.15)_0%,transparent_70%)]"></div>
+        <div className="absolute bottom-[-50%] right-[-20%] w-[80%] h-[80%] bg-[radial-gradient(circle,rgba(247,86,24,0.1)_0%,transparent_70%)]"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="flex items-center space-x-2 mb-6">
               {settings?.siteLogo ? (
                 <div className="relative h-10 w-32">
                   <Image
                     src={settings.siteLogo}
                     alt={settings.siteName || "Thai MOOC"}
                     fill
-                    className="object-contain"
+                    className="object-contain brightness-0 invert"
                   />
                 </div>
               ) : (
                 <>
-                  <BookOpen className="h-8 w-8 text-primary" />
-                  <span className="text-xl font-bold">{settings?.siteName || "Thai MOOC"}</span>
+                  <BookOpen className="h-8 w-8 text-[#0AD7AC]" />
+                  <span className="text-xl font-bold text-white">{settings?.siteName || "Thai MOOC"}</span>
                 </>
               )}
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               {t(
                 settings?.aboutUs || "แพลตฟอร์มการเรียนรู้ออนไลน์สำหรับคนไทย",
                 settings?.aboutUsEn || "Online Learning Platform for Thai People"
@@ -43,54 +49,54 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-[1.2rem]">{t("ลิงก์ด่วน", "Quick Links")}</h3>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              <Link href="/courses" className="text-gray-600 hover:text-primary">
+            <h3 className="font-bold mb-6 text-[1.2rem] text-slate-100">{t("ลิงก์ด่วน", "Quick Links")}</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+              <Link href="/courses" className="text-slate-400 hover:text-[#0AD7AC] transition-colors">
                 {t("รายวิชาทั้งหมด", "Courses")}
               </Link>
-              <Link href="/institutions" className="text-gray-600 hover:text-primary">
+              <Link href="/institutions" className="text-slate-400 hover:text-[#0AD7AC] transition-colors">
                 {t("สถาบันผู้พัฒนา", "Institutions")}
               </Link>
-              <Link href="/news" className="text-gray-600 hover:text-primary">
+              <Link href="/news" className="text-slate-400 hover:text-[#0AD7AC] transition-colors">
                 {t("ข่าวประชาสัมพันธ์", "News")}
               </Link>
-              <Link href="/support" className="text-gray-600 hover:text-primary">
+              <Link href="/support" className="text-slate-400 hover:text-[#0AD7AC] transition-colors">
                 {t("คู่มือและบริการ", "Manuals & Services")}
               </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-primary">
+              <Link href="/contact" className="text-slate-400 hover:text-[#0AD7AC] transition-colors">
                 {t("ติดต่อเรา", "Contact")}
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-[1.2rem]">{t("ติดต่อเรา", "Contact Us")}</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <Mail className="flex-shrink-0" style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }} />
+            <h3 className="font-bold mb-6 text-[1.2rem] text-slate-100">{t("ติดต่อเรา", "Contact Us")}</h3>
+            <ul className="space-y-4 text-sm text-slate-400">
+              <li className="flex items-center gap-3">
+                <Mail className="flex-shrink-0 text-[#0AD7AC]" style={{ width: '20px', height: '20px' }} />
                 <span>{settings?.contactEmail || "contact@thaimooc.ac.th"}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="flex-shrink-0" style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }} />
+              <li className="flex items-center gap-3">
+                <Phone className="flex-shrink-0 text-[#0AD7AC]" style={{ width: '20px', height: '20px' }} />
                 <span>{settings?.contactPhone || "02-123-4567"}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="flex-shrink-0" style={{ width: '20px', height: '20px', minWidth: '20px', minHeight: '20px' }} />
+              <li className="flex items-center gap-3">
+                <MapPin className="flex-shrink-0 text-[#0AD7AC]" style={{ width: '20px', height: '20px' }} />
                 <span>{settings?.address ? t(settings.address, settings.addressEn || settings.address) : t("กรุงเทพมหานคร ประเทศไทย", "Bangkok, Thailand")}</span>
               </li>
             </ul>
 
             {/* Social Media Icons */}
             {(settings?.facebookUrl || settings?.twitterUrl || settings?.youtubeUrl || settings?.instagramUrl || settings?.lineUrl) && (
-              <div className="mt-4">
-                <h4 className="font-semibold mb-3 text-sm">{t("ติดตามเรา", "Follow Us")}</h4>
+              <div className="mt-8">
+                <h4 className="font-bold mb-4 text-sm text-slate-100">{t("ติดตามเรา", "Follow Us")}</h4>
                 <div className="flex gap-3">
                   {settings?.facebookUrl && (
                     <a
                       href={settings.facebookUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-gray-200 hover:bg-primary hover:text-white transition-colors flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-[#0AD7AC] hover:text-white hover:border-[#0AD7AC] transition-all flex items-center justify-center backdrop-blur-sm"
                       aria-label="Facebook"
                     >
                       <Facebook className="h-4 w-4" />
@@ -101,7 +107,7 @@ export function Footer() {
                       href={settings.twitterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-gray-200 hover:bg-primary hover:text-white transition-colors flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-[#0AD7AC] hover:text-white hover:border-[#0AD7AC] transition-all flex items-center justify-center backdrop-blur-sm"
                       aria-label="Twitter"
                     >
                       <Twitter className="h-4 w-4" />
@@ -112,7 +118,7 @@ export function Footer() {
                       href={settings.youtubeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-gray-200 hover:bg-primary hover:text-white transition-colors flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-[#0AD7AC] hover:text-white hover:border-[#0AD7AC] transition-all flex items-center justify-center backdrop-blur-sm"
                       aria-label="YouTube"
                     >
                       <Youtube className="h-4 w-4" />
@@ -123,7 +129,7 @@ export function Footer() {
                       href={settings.instagramUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-gray-200 hover:bg-primary hover:text-white transition-colors flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-[#0AD7AC] hover:text-white hover:border-[#0AD7AC] transition-all flex items-center justify-center backdrop-blur-sm"
                       aria-label="Instagram"
                     >
                       <Instagram className="h-4 w-4" />
@@ -134,7 +140,7 @@ export function Footer() {
                       href={settings.lineUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-full bg-gray-200 hover:bg-primary hover:text-white transition-colors flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-[#0AD7AC] hover:text-white hover:border-[#0AD7AC] transition-all flex items-center justify-center backdrop-blur-sm"
                       aria-label="LINE"
                     >
                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -148,8 +154,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t mt-8 pt-6">
-          <p className="text-center text-sm text-gray-600">
+        <div className="border-t border-white/10 mt-12 pt-8">
+          <p className="text-center text-sm text-slate-500">
             © 2025 {settings?.siteName || "Thai MOOC"}. {t("สงวนลิขสิทธิ์", "All rights reserved")}.
           </p>
         </div>

@@ -17,6 +17,8 @@ import { PopupModal } from "@/components/public/popup-modal";
 import { HomeSearchBox } from "@/components/public/home-search-box";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { AIParticleHeroDemo } from "@/components/public/ai-particle-hero-demo";
+import { CourseCardLightTech } from "@/components/course-card-light-tech";
+import { CourseCardDarkTech } from "@/components/course-card-dark-tech";
 
 interface HomePageClientProps {
     categories: Category[];
@@ -97,54 +99,93 @@ export default function HomePageClient({
                 </div>
             </section>
 
-            {/* New Courses */}
-            <section className="container mx-auto px-4 py-12 bg-gray-50">
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-2">
-                        <SquarePlus className="h-6 w-6 text-primary" />
-                        <h2 className="text-[1.2rem] font-bold">
-                            {t("รายวิชาใหม่", "New Courses")}
-                        </h2>
+
+
+            {/* New Arrivals (Light Tech Theme Background) */}
+            <section className="relative w-full py-16 overflow-hidden border-y border-slate-100/50">
+                {/* Background Gradient & Pattern */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 to-white z-0" />
+                <div
+                    className="absolute inset-0 opacity-[0.4] z-0 pointer-events-none"
+                    style={{
+                        backgroundImage: 'radial-gradient(#94a3b8 1px, transparent 1px)',
+                        backgroundSize: '32px 32px'
+                    }}
+                />
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-1 bg-[#0AD7AC] rounded-full shadow-[0_0_10px_rgba(10,215,172,0.8)]" />
+                            <h2 className="text-[1.2rem] font-bold text-[#0f172a] tracking-wide">
+                                {t("รายวิชามาใหม่", "New Arrivals")}
+                            </h2>
+                        </div>
+                        <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
+                            <Link href="/courses">
+                                {t("ดูทั้งหมด", "View All")}
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
                     </div>
-                    <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
-                        <Link href="/courses">
-                            {t("ดูทั้งหมด", "View All")}
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {newCourses.map((course) => (
-                        <CourseCard key={course.id} course={course} language={language} institutions={institutions} courseTypes={courseTypes} categories={categories} />
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {newCourses.map((course) => (
+                            <div key={course.id} className="h-full">
+                                <CourseCardLightTech
+                                    course={course}
+                                    language={language}
+                                    institutions={institutions}
+                                    courseTypes={courseTypes}
+                                    categories={categories}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* Popular Courses */}
-            <section className="container mx-auto px-4 py-12">
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-2">
-                        <ArrowUpSquare className="h-6 w-6 text-primary" />
-                        <h2 className="text-[1.2rem] font-bold">
-                            {t("รายวิชาได้รับความนิยมสูงสุด", "Popular Courses")}
-                        </h2>
-                    </div>
-                    <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
-                        <Link href="/courses">
-                            {t("ดูทั้งหมด", "View All")}
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
+            {/* Popular Courses (Dark Tech Theme) */}
+            <section className="py-16 bg-[#0c1c3b] relative overflow-hidden font-poppins text-white">
+                {/* High-Fidelity Ambient Mesh Glows */}
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-[radial-gradient(circle,rgba(29,130,183,0.18)_0%,transparent_70%)]"></div>
+                    <div className="absolute bottom-[-15%] left-[5%] w-[80%] h-[80%] bg-[radial-gradient(circle,rgba(247,86,24,0.12)_0%,transparent_70%)]"></div>
+                    <div className="absolute top-[10%] right-[-15%] w-[90%] h-[90%] bg-[radial-gradient(circle,rgba(252,180,120,0.1)_0%,transparent_70%)]"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {popularCourses.map((course) => (
-                        <CourseCard key={course.id} course={course} language={language} institutions={institutions} courseTypes={courseTypes} categories={categories} />
-                    ))}
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-2">
+                            <ArrowUpSquare className="h-6 w-6 text-[#0AD7AC]" />
+                            <h2 className="text-[1.2rem] font-bold text-slate-100">
+                                {t("รายวิชาได้รับความนิยมสูงสุด", "Popular Courses")}
+                            </h2>
+                        </div>
+                        <Button asChild variant="default" style={{ borderRadius: '5px', backgroundColor: '#224188' }}>
+                            <Link href="/courses">
+                                {t("ดูทั้งหมด", "View All")}
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {popularCourses.map((course) => (
+                            <div key={course.id} className="h-full">
+                                <CourseCardDarkTech
+                                    course={course}
+                                    language={language}
+                                    institutions={institutions}
+                                    courseTypes={courseTypes}
+                                    categories={categories}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
             {/* News & Announcements */}
-            <section className="container mx-auto px-4 py-12 bg-gray-50">
+            <section className="container mx-auto px-4 py-12 bg-white">
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-[1.2rem] font-bold">
                         {t("ข่าวประชาสัมพันธ์", "News & Announcements")}
