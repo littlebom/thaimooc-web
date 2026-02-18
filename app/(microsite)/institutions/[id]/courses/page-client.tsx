@@ -264,7 +264,7 @@ function MicrositeCoursesContent({
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {paginatedCourses?.map((course) => (
                                     <Link key={course.id} href={`/courses/${(course as any).courseCode || course.id}`}>
-                                        <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
+                                        <Card className="hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
                                             <div className="relative h-48">
                                                 <SafeImage
                                                     src={getImageUrl(course.imageId)}

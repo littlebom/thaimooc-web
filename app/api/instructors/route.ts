@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, execute } from "@/lib/mysql-direct";
 import { apiCache } from "@/lib/api-cache";
 import { getSession } from "@/lib/auth";
@@ -115,8 +116,9 @@ export async function POST(request: NextRequest) {
       [id]
     );
 
-    // Clear cache when new instructor is added
+    // Clear in-memory cache and revalidate Next.js page cache
     apiCache.clearPattern('instructors:*');
+    revalidatePath("/", "layout");
 
     return NextResponse.json(
       {

@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
 
     let filename;
     // Use structured naming for known types: {type}-{shortId}{extension}
-    if (['course', 'institution', 'news', 'instructor', 'banner', 'banner-square'].includes(imageType)) {
+    if (['course', 'institution', 'news', 'instructor', 'banner', 'banner-square', 'logo'].includes(imageType)) {
       filename = `${imageType}-${shortId}${fileExtension}`;
     } else {
       // Fallback for other types: {shortId}-{originalName}{extension}
@@ -140,6 +140,8 @@ export async function POST(request: NextRequest) {
       typeFolder = 'banners';
     } else if (imageType === 'news') {
       typeFolder = 'news'; // Keep 'news' as is, don't add 's'
+    } else if (imageType === 'logo') {
+      typeFolder = 'logos';
     } else if (['banner', 'course', 'instructor', 'institution', 'square'].includes(imageType)) {
       typeFolder = `${imageType}s`;
     } else {
@@ -164,8 +166,8 @@ export async function POST(request: NextRequest) {
 
     console.log("File uploaded successfully:", filepath);
 
-    // Return URL with cache-busting timestamp
-    const url = `/uploads/${typeFolder}/${filename}?t=${timestamp}`;
+    // Return URL (filename already contains unique timestamp-based shortId for cache-busting)
+    const url = `/uploads/${typeFolder}/${filename}`;
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,7 @@ import { AIParticleHeroDemo } from "@/components/public/ai-particle-hero-demo";
 import { DemoBannerCards } from "@/components/demo-banner-cards";
 import { DemoBannerCardsDark } from "@/components/demo-banner-cards-dark";
 import { getCourses, getCategories, getInstitutions, getCourseTypes } from "@/lib/data";
+import { DemoFilterWrapper } from "./demo-filter-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,24 @@ export default async function DemoBannerPage() {
                         categories={categories}
                         institutions={institutions}
                     // courseTypes logic is handled inside finding relations, but good to pass if needed for future
+                    />
+                </div>
+            </div>
+
+            {/* Search Filter UI Demo */}
+            <div className="py-16 bg-slate-50 relative">
+                <div className="container mx-auto px-4 z-10 relative">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="h-8 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                        <h2 className="text-2xl font-bold text-slate-900 tracking-wide">
+                            UI Component Demo <span className="text-slate-400 font-light">|</span> Search & Filter Card
+                        </h2>
+                    </div>
+
+                    <DemoFilterWrapper
+                        categories={categories}
+                        institutions={institutions}
+                        courseTypes={courseTypes}
                     />
                 </div>
             </div>

@@ -14,6 +14,7 @@ import { useNotification } from "@/components/ui/notification-dialog";
 interface MenuItem {
     id: string; // generated UUID or temp ID
     label: string;
+    labelEn?: string;
     url: string;
     order: number;
     target: "_self" | "_blank";
@@ -35,6 +36,7 @@ export function MenuBuilder({ institutionId }: MenuBuilderProps) {
     const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
     const [formData, setFormData] = useState<Partial<MenuItem>>({
         label: "",
+        labelEn: "",
         url: "",
         target: "_self"
     });
@@ -82,7 +84,7 @@ export function MenuBuilder({ institutionId }: MenuBuilderProps) {
 
     const handleAddItem = () => {
         setEditingItem(null);
-        setFormData({ label: "", url: "", target: "_self" });
+        setFormData({ label: "", labelEn: "", url: "", target: "_self" });
         setIsDialogOpen(true);
     };
 
@@ -124,6 +126,7 @@ export function MenuBuilder({ institutionId }: MenuBuilderProps) {
             newItems.push({
                 id: crypto.randomUUID(), // Temp ID
                 label: formData.label,
+                labelEn: formData.labelEn || "",
                 url: formData.url,
                 target: formData.target as "_self" | "_blank" || "_self",
                 order: newItems.length
@@ -149,6 +152,7 @@ export function MenuBuilder({ institutionId }: MenuBuilderProps) {
                     <GripVertical className="h-5 w-5 text-slate-400 cursor-move" />
                     <div className="flex-1">
                         <div className="font-medium">{item.label}</div>
+                        {item.labelEn && <div className="text-xs text-blue-500">{item.labelEn}</div>}
                         <div className="text-xs text-muted-foreground">{item.url}</div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -224,10 +228,18 @@ export function MenuBuilder({ institutionId }: MenuBuilderProps) {
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label>Label</Label>
+                            <Label>Label (ภาษาไทย)</Label>
                             <Input
                                 value={formData.label}
                                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                                placeholder="เช่น หน้าแรก"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Label (English)</Label>
+                            <Input
+                                value={formData.labelEn || ""}
+                                onChange={(e) => setFormData({ ...formData, labelEn: e.target.value })}
                                 placeholder="e.g. Home"
                             />
                         </div>

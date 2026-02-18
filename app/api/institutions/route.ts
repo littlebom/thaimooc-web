@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, queryOne, execute } from "@/lib/mysql-direct";
 import { redisCache } from "@/lib/redis-cache";
 import { addCacheHeaders } from "@/lib/cache-headers";
@@ -101,8 +102,9 @@ export async function POST(request: NextRequest) {
       [id]
     );
 
-    // Clear cache when new institution is added
+    // Clear in-memory cache and revalidate Next.js page cache
     await redisCache.delete(CACHE_KEY);
+    revalidatePath("/", "layout");
 
     const response: ApiResponse<Institution> = {
       success: true,

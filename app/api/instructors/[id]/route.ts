@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, queryOne, execute } from "@/lib/mysql-direct";
+import { apiCache } from "@/lib/api-cache";
 
 export async function GET(
   request: NextRequest,
@@ -102,6 +104,10 @@ export async function PUT(
       [id]
     );
 
+    // Clear in-memory cache and revalidate Next.js page cache
+    apiCache.clearPattern('instructors:*');
+    revalidatePath("/", "layout");
+
     return NextResponse.json({
       success: true,
       data: updatedInstructor,
@@ -151,6 +157,10 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    // Clear in-memory cache and revalidate Next.js page cache
+    apiCache.clearPattern('instructors:*');
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,

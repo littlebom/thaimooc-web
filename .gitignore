@@ -47,3 +47,6 @@ schema.txt
 migrate-theme-colors.*
 export-settings.js
 /public/uploads/
+
+# Claude Code internal files
+.claude/

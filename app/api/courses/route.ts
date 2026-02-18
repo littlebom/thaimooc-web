@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, transaction, queryOne, SqlParams } from "@/lib/mysql-direct";
 import { redisCache } from "@/lib/redis-cache";
 import { addCacheHeaders } from "@/lib/cache-headers";
@@ -326,8 +327,9 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Clear cache when new course is added
-    redisCache.clearPattern('courses:*');
+    // Clear in-memory cache and revalidate Next.js page cache
+    await redisCache.clearPattern('courses:*');
+    revalidatePath("/", "layout");
 
     const newCourse = await queryOne<Course>(
       'SELECT * FROM courses WHERE id = ?',

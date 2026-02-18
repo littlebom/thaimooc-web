@@ -13,7 +13,7 @@ export async function GET(
 
     const { id } = await params;
     const user = await queryOne(
-      `SELECT id, username, name, email, role, isActive, lastLogin, createdAt, updatedAt
+      `SELECT id, username, name, email, role, isActive, institutionId, lastLogin, createdAt, updatedAt
        FROM admin_users WHERE id = ?`,
       [id]
     );
@@ -131,6 +131,10 @@ export async function PATCH(
       updates.push('isActive = ?');
       values.push(body.isActive);
     }
+    if (body.institutionId !== undefined) {
+      updates.push('institutionId = ?');
+      values.push(body.institutionId || null);
+    }
 
     // Hash new password if provided
     if (body.password) {
@@ -151,7 +155,7 @@ export async function PATCH(
     );
 
     const updatedUser = await queryOne(
-      `SELECT id, username, name, email, role, isActive, lastLogin, createdAt, updatedAt
+      `SELECT id, username, name, email, role, isActive, institutionId, lastLogin, createdAt, updatedAt
        FROM admin_users WHERE id = ?`,
       [id]
     );

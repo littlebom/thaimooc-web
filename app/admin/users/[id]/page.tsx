@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function getUser(id: string) {
   const user = await queryOne<any>(
-    'SELECT id, username, name, email, role, isActive FROM admin_users WHERE id = ?',
+    'SELECT id, username, name, email, role, isActive, institutionId FROM admin_users WHERE id = ?',
     [id]
   );
 

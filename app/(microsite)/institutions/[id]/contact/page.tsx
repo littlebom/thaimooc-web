@@ -104,14 +104,49 @@ export default async function InstitutionContactPage({ params }: { params: Promi
                     </Card>
                 </div>
 
-                {/* Optional: Map or additional info */}
-                <div className="h-full min-h-[300px] bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
-                    {/* Placeholder for Map */}
-                    <div className="text-center">
-                        <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>Map Preview</p>
-                        <p className="text-xs max-w-xs mx-auto mt-2">(Interactive map integration requires API Key)</p>
-                    </div>
+                {/* Map Section */}
+                <div className="h-full min-h-[300px] rounded-lg overflow-hidden">
+                    {institution.mapUrl ? (
+                        <iframe
+                            src={institution.mapUrl}
+                            width="100%"
+                            height="100%"
+                            style={{ minHeight: "300px", border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title={`แผนที่ ${institution.name}`}
+                        />
+                    ) : institution.address ? (
+                        <div className="h-full min-h-[300px] bg-slate-50 border rounded-lg flex flex-col items-center justify-center gap-4 p-8 text-center">
+                            <div className="bg-slate-100 p-4 rounded-full">
+                                <MapPin className="w-10 h-10 text-slate-400" />
+                            </div>
+                            <div>
+                                <p className="font-medium text-slate-700 mb-1">ที่อยู่</p>
+                                <p className="text-slate-500 text-sm">{institution.address}</p>
+                            </div>
+                            <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(institution.address)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors"
+                                style={{ backgroundColor: institution.primaryColor || "#3b82f6" }}
+                            >
+                                <MapPin className="w-4 h-4" />
+                                ดูบน Google Maps
+                            </a>
+                        </div>
+                    ) : (
+                        <Card className="h-full border-none shadow-lg">
+                            <CardContent className="h-full min-h-[300px] flex items-center justify-center p-8">
+                                <div className="text-center text-slate-400">
+                                    <MapPin className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                                    <p className="text-sm">ยังไม่มีข้อมูลที่อยู่</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

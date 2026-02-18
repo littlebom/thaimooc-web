@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { redisCache } from "@/lib/redis-cache";
 import { getSession } from "@/lib/auth";
 
@@ -12,6 +13,9 @@ export async function POST(request: NextRequest) {
 
         // Clear all server-side memory cache
         await redisCache.clearAll();
+
+        // Revalidate all Next.js page cache
+        revalidatePath("/", "layout");
 
         console.log(`[Cache] System cache cleared by user: ${session.email}`);
 

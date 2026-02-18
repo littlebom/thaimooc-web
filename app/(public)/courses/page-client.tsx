@@ -17,6 +17,7 @@ import { getImageUrl } from "@/lib/utils";
 import { getIconComponent } from "@/lib/icon-map";
 import { Pagination } from "@/components/pagination";
 import { CourseCardLightTech } from "@/components/course-card-light-tech";
+import { CourseSearchFilterCard } from "@/components/course-search-filter-card";
 
 interface CoursesPageClientProps {
     initialCourses: CourseWithRelations[];
@@ -113,139 +114,25 @@ function CoursesPageContent({
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Sidebar Filters */}
                 <aside className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{t("ค้นหาและกรองรายวิชา", "Search & Filter")}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Search */}
-                            <div>
-                                <Label htmlFor="search">
-                                    {t("ค้นหาชื่อรายวิชา", "Search Course Title")}
-                                </Label>
-                                <div className="relative mt-2">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="search"
-                                        placeholder={t("ค้นหา...", "Search...")}
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Category Filter */}
-                            <div>
-                                <Label>
-                                    {t("หมวดหมู่", "Category")}
-                                </Label>
-                                <div className="mt-2 space-y-1">
-                                    <button
-                                        onClick={() => setSelectedCategory("")}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${selectedCategory === ""
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-accent"
-                                            }`}
-                                    >
-                                        {t("ทั้งหมด", "All")}
-                                    </button>
-                                    {categories?.map((cat) => {
-                                        const IconComponent = getIconComponent(cat.icon);
-                                        return (
-                                            <button
-                                                key={cat.id}
-                                                onClick={() => setSelectedCategory(cat.id)}
-                                                className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${selectedCategory === cat.id
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "hover:bg-accent"
-                                                    }`}
-                                            >
-                                                <IconComponent className="w-4 h-4 flex-shrink-0" />
-                                                <span className="truncate">
-                                                    {language === "th" ? cat.name : cat.nameEn}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Institution Filter */}
-                            <div>
-                                <Label htmlFor="institution">
-                                    {t("สถาบันการศึกษา", "Institution")}
-                                </Label>
-                                <Select
-                                    value={selectedInstitution || "all"}
-                                    onValueChange={(value) => setSelectedInstitution(value === "all" ? "" : value)}
-                                >
-                                    <SelectTrigger className="mt-2">
-                                        <SelectValue placeholder={t("ทั้งหมด", "All")} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">{t("ทั้งหมด", "All")}</SelectItem>
-                                        {institutions?.map((inst) => (
-                                            <SelectItem key={inst.id} value={inst.id}>
-                                                {language === "th" ? inst.name : inst.nameEn}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Course Type Filter */}
-                            <div>
-                                <Label>
-                                    {t("ประเภทรายวิชา", "Course Type")}
-                                </Label>
-                                <div className="mt-2 space-y-1">
-                                    <button
-                                        onClick={() => setSelectedCourseType("")}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${selectedCourseType === ""
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-accent"
-                                            }`}
-                                    >
-                                        {t("ทั้งหมด", "All")}
-                                    </button>
-                                    {courseTypes?.map((type) => {
-                                        const IconComponent = getIconComponent(type.icon || "BookOpen");
-                                        return (
-                                            <button
-                                                key={type.id}
-                                                onClick={() => setSelectedCourseType(type.id)}
-                                                className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${selectedCourseType === type.id
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "hover:bg-accent"
-                                                    }`}
-                                            >
-                                                <IconComponent className="w-4 h-4 flex-shrink-0" />
-                                                <span className="truncate">
-                                                    {language === "th" ? type.name : type.nameEn}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Clear Filters */}
-                            {(searchQuery || selectedCategory || selectedInstitution || selectedCourseType) && (
-                                <button
-                                    onClick={() => {
-                                        setSearchQuery("");
-                                        setSelectedCategory("");
-                                        setSelectedInstitution("");
-                                        setSelectedCourseType("");
-                                    }}
-                                    className="text-sm text-primary hover:underline"
-                                >
-                                    {t("ล้างตัวกรอง", "Clear Filters")}
-                                </button>
-                            )}
-                        </CardContent>
-                    </Card>
+                    <CourseSearchFilterCard
+                        categories={categories}
+                        institutions={institutions}
+                        courseTypes={courseTypes}
+                        searchQuery={searchQuery}
+                        selectedCategory={selectedCategory}
+                        selectedInstitution={selectedInstitution}
+                        selectedCourseType={selectedCourseType}
+                        onSearchChange={setSearchQuery}
+                        onCategoryChange={setSelectedCategory}
+                        onInstitutionChange={setSelectedInstitution}
+                        onCourseTypeChange={setSelectedCourseType}
+                        onClearFilters={() => {
+                            setSearchQuery("");
+                            setSelectedCategory("");
+                            setSelectedInstitution("");
+                            setSelectedCourseType("");
+                        }}
+                    />
                 </aside>
 
                 {/* Course Grid */}

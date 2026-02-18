@@ -71,7 +71,7 @@ export async function PUT(req: NextRequest) {
         const allowedFields = [
             'name', 'nameEn', 'description', 'descriptionEn', 'primaryColor', 'secondaryColor',
             'address', 'addressEn', 'phoneNumber', 'email', 'socialLinks',
-            'website', 'bannerUrl', 'mapUrl'
+            'website', 'bannerUrl', 'mapUrl', 'micrositeEnabled'
         ];
 
         for (const field of allowedFields) {

@@ -1,10 +1,10 @@
 "use client";
 
 import { Institution, CourseWithRelations, Category, CourseType, News } from "@/lib/types";
-import { CourseCard } from "@/components/course-card";
 import { useLanguage } from "@/lib/language-context";
 import { SafeImage } from "@/components/safe-image";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BookOpen, Users, SquarePlus, ArrowUpSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
@@ -175,15 +175,69 @@ export default function InstitutionHomeClient({
                 {newCourses.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {newCourses.map((course) => (
-                            <CourseCard
-                                key={course.id}
-                                course={course}
-                                language={language}
-                                institutions={[institution]}
-                                categories={categories}
-                                courseTypes={courseTypes}
-                                primaryColor={institution.primaryColor}
-                            />
+                            <Link key={course.id} href={`/courses/${(course as any).courseCode || course.id}`}>
+                                <Card className="hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
+                                    <div className="relative h-48">
+                                        <SafeImage
+                                            src={getImageUrl(course.imageId)}
+                                            alt={language === "th" ? course.title : course.titleEn}
+                                            fill
+                                            className="object-cover rounded-t-lg"
+                                            fallbackType="course"
+                                        />
+                                        {(() => {
+                                            const types = course.courseCourseTypes || (course as any).course_course_types || [];
+                                            if (types.length > 0 && courseTypes.length > 0) {
+                                                const icons = types.slice(0, 3).map((ct: any) => {
+                                                    const courseType = courseTypes.find(t => t.id === ct.courseTypeId);
+                                                    if (!courseType || !courseType.icon) return null;
+                                                    const IconComponent = getIconComponent(courseType.icon);
+                                                    return { IconComponent, name: language === "th" ? courseType.name : courseType.nameEn };
+                                                }).filter(Boolean);
+                                                if (icons.length === 0) return null;
+                                                return (
+                                                    <div className="absolute top-2 right-2 flex gap-1">
+                                                        {icons.map((item: any, index: number) => {
+                                                            const Icon = item.IconComponent;
+                                                            return (
+                                                                <div key={index} className="text-white backdrop-blur-sm rounded-full p-2 flex items-center justify-center" style={{ backgroundColor: institution.primaryColor || 'var(--primary)' }} title={item.name}>
+                                                                    <Icon className="h-4 w-4" />
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                    <CardHeader className="flex-grow">
+                                        <CardTitle className="line-clamp-2 text-base">
+                                            {language === "th" ? course.title : course.titleEn}
+                                        </CardTitle>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            {language === "th" ? institution.name : institution.nameEn}
+                                        </p>
+                                        {(() => {
+                                            const courseCategories = course.courseCategories || (course as any).course_categories || [];
+                                            const categoryNames = courseCategories.map((cc: any) => {
+                                                const cat = categories.find(c => c.id === cc.categoryId);
+                                                return cat ? (language === "th" ? cat.name : cat.nameEn) : null;
+                                            }).filter(Boolean).join(", ");
+                                            if (!categoryNames) return null;
+                                            return <p className="text-xs text-muted-foreground mt-1">{categoryNames}</p>;
+                                        })()}
+                                    </CardHeader>
+                                    <CardContent className="mt-auto">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <Badge variant="secondary">{course.level}</Badge>
+                                            <span className="text-muted-foreground">
+                                                {course.durationHours} {language === "th" ? "ชั่วโมง" : "hours"}
+                                            </span>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 ) : (
@@ -212,15 +266,69 @@ export default function InstitutionHomeClient({
                 {popularCourses.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {popularCourses.map((course) => (
-                            <CourseCard
-                                key={course.id}
-                                course={course}
-                                language={language}
-                                institutions={[institution]}
-                                categories={categories}
-                                courseTypes={courseTypes}
-                                primaryColor={institution.primaryColor}
-                            />
+                            <Link key={course.id} href={`/courses/${(course as any).courseCode || course.id}`}>
+                                <Card className="hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
+                                    <div className="relative h-48">
+                                        <SafeImage
+                                            src={getImageUrl(course.imageId)}
+                                            alt={language === "th" ? course.title : course.titleEn}
+                                            fill
+                                            className="object-cover rounded-t-lg"
+                                            fallbackType="course"
+                                        />
+                                        {(() => {
+                                            const types = course.courseCourseTypes || (course as any).course_course_types || [];
+                                            if (types.length > 0 && courseTypes.length > 0) {
+                                                const icons = types.slice(0, 3).map((ct: any) => {
+                                                    const courseType = courseTypes.find(t => t.id === ct.courseTypeId);
+                                                    if (!courseType || !courseType.icon) return null;
+                                                    const IconComponent = getIconComponent(courseType.icon);
+                                                    return { IconComponent, name: language === "th" ? courseType.name : courseType.nameEn };
+                                                }).filter(Boolean);
+                                                if (icons.length === 0) return null;
+                                                return (
+                                                    <div className="absolute top-2 right-2 flex gap-1">
+                                                        {icons.map((item: any, index: number) => {
+                                                            const Icon = item.IconComponent;
+                                                            return (
+                                                                <div key={index} className="text-white backdrop-blur-sm rounded-full p-2 flex items-center justify-center" style={{ backgroundColor: institution.primaryColor || 'var(--primary)' }} title={item.name}>
+                                                                    <Icon className="h-4 w-4" />
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                    <CardHeader className="flex-grow">
+                                        <CardTitle className="line-clamp-2 text-base">
+                                            {language === "th" ? course.title : course.titleEn}
+                                        </CardTitle>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            {language === "th" ? institution.name : institution.nameEn}
+                                        </p>
+                                        {(() => {
+                                            const courseCategories = course.courseCategories || (course as any).course_categories || [];
+                                            const categoryNames = courseCategories.map((cc: any) => {
+                                                const cat = categories.find(c => c.id === cc.categoryId);
+                                                return cat ? (language === "th" ? cat.name : cat.nameEn) : null;
+                                            }).filter(Boolean).join(", ");
+                                            if (!categoryNames) return null;
+                                            return <p className="text-xs text-muted-foreground mt-1">{categoryNames}</p>;
+                                        })()}
+                                    </CardHeader>
+                                    <CardContent className="mt-auto">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <Badge variant="secondary">{course.level}</Badge>
+                                            <span className="text-muted-foreground">
+                                                {course.durationHours} {language === "th" ? "ชั่วโมง" : "hours"}
+                                            </span>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 ) : (

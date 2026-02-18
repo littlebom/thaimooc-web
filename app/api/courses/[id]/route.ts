@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, queryOne, execute, transaction } from "@/lib/mysql-direct";
 import { redisCache } from "@/lib/redis-cache";
 
@@ -258,8 +259,9 @@ export async function PUT(
       }
     });
 
-    // Clear cache after update
+    // Clear in-memory cache and revalidate Next.js page cache
     await redisCache.clearPattern('courses:*');
+    revalidatePath("/", "layout");
 
     // Clear skill analysis cache when course is updated (optional table)
     try {
@@ -356,8 +358,9 @@ export async function DELETE(
       );
     }
 
-    // Clear cache after delete
+    // Clear in-memory cache and revalidate Next.js page cache
     await redisCache.clearPattern('courses:*');
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,

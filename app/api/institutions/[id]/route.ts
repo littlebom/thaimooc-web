@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { query, queryOne, execute } from "@/lib/mysql-direct";
+import { redisCache } from "@/lib/redis-cache";
 
 export async function GET(
   request: NextRequest,
@@ -138,6 +140,10 @@ export async function PUT(
       [id]
     );
 
+    // Clear in-memory cache and revalidate Next.js page cache
+    await redisCache.delete('institutions:all');
+    revalidatePath("/", "layout");
+
     return NextResponse.json({
       success: true,
       data: updatedInstitution,
@@ -203,6 +209,10 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    // Clear in-memory cache and revalidate Next.js page cache
+    await redisCache.delete('institutions:all');
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,

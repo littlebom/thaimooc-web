@@ -248,19 +248,99 @@ export function InstitutionForm({ institution }: InstitutionFormProps) {
               />
             </div>
 
-            {formData.micrositeEnabled && institution && (
-              <div className="flex justify-end mt-2">
-                <Button
-                  variant="link"
-                  className="text-primary gap-2 h-auto p-0"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.open(`/institutions/${institution.id}`, '_blank');
-                  }}
-                >
-                  <Globe className="w-4 h-4" />
-                  Open Live Microsite
-                </Button>
+            {formData.micrositeEnabled && (
+              <div className="space-y-6 pt-4 border-t animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Banner Upload */}
+                  <div className="space-y-2">
+                    <Label>Microsite Banner</Label>
+                    <div className="border rounded-md p-4 bg-slate-50">
+                      <ImageUploadWithCrop
+                        imageType="banner"
+                        currentImageUrl={bannerPreview}
+                        onImageUploaded={(url) => {
+                          handleChange("bannerUrl", url);
+                          setBannerPreview(url);
+                        }}
+                        onImageRemoved={() => {
+                          handleChange("bannerUrl", "");
+                          setBannerPreview("");
+                        }}
+                        label=""
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Recommended size: 1940x485 pixels
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Theme Colors */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="primaryColor">Primary Color</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="primaryColor"
+                          type="color"
+                          value={formData.primaryColor || "#1e40af"}
+                          onChange={(e) => handleChange("primaryColor", e.target.value)}
+                          className="w-12 h-10 p-1 cursor-pointer"
+                        />
+                        <Input
+                          type="text"
+                          value={formData.primaryColor || ""}
+                          onChange={(e) => handleChange("primaryColor", e.target.value)}
+                          placeholder="#1e40af"
+                          className="font-mono uppercase"
+                          maxLength={7}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Used for buttons, headers, and key accent elements.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="secondaryColor">Secondary Color</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="secondaryColor"
+                          type="color"
+                          value={formData.secondaryColor || "#f59e0b"}
+                          onChange={(e) => handleChange("secondaryColor", e.target.value)}
+                          className="w-12 h-10 p-1 cursor-pointer"
+                        />
+                        <Input
+                          type="text"
+                          value={formData.secondaryColor || ""}
+                          onChange={(e) => handleChange("secondaryColor", e.target.value)}
+                          placeholder="#f59e0b"
+                          className="font-mono uppercase"
+                          maxLength={7}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Used for emphasis and highlighting.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {institution && (
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      variant="outline"
+                      className="border-primary/20 text-primary hover:bg-primary/5 gap-2"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.open(`/institutions/${institution.id}`, '_blank');
+                      }}
+                    >
+                      <Globe className="w-4 h-4" />
+                      Open Live Microsite
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 

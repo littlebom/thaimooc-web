@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             await db.execute(
-                "INSERT INTO menu_items (id, menuId, label, url, `order`, target) VALUES (?, ?, ?, ?, ?, ?)",
-                [nanoid(), menuId, item.label, item.url, i, item.target || '_self']
+                "INSERT INTO menu_items (id, menuId, label, labelEn, url, `order`, target) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [nanoid(), menuId, item.label, item.labelEn || null, item.url, i, item.target || '_self']
             );
         }
 

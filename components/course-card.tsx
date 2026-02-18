@@ -86,7 +86,7 @@ export function CourseCard({
 
                     {/* Course Title - Magazine Style */}
                     <CardTitle
-                        className="line-clamp-2 text-xl font-bold leading-tight group-hover:text-primary transition-colors text-slate-800"
+                        className="line-clamp-2 text-base font-bold leading-tight group-hover:text-primary transition-colors text-slate-800"
                         style={primaryColor ? { color: undefined } : {}}
                     >
                         <span style={primaryColor ? { color: primaryColor } : {}} className={cn(!primaryColor && "group-hover:text-primary")}>

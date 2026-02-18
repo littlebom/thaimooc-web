@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { queryOne, execute } from "@/lib/mysql-direct";
+import { redisCache } from "@/lib/redis-cache";
 
 export async function GET(
   request: NextRequest,
@@ -147,10 +148,11 @@ export async function PUT(
       [id]
     );
 
-    // Revalidate the cache for banner pages
+    // Clear in-memory cache and revalidate Next.js page cache
+    await redisCache.clearPattern('banners:*');
     revalidatePath("/admin/banners");
     revalidatePath(`/admin/banners/${id}`);
-    revalidatePath("/");
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,
@@ -186,9 +188,10 @@ export async function DELETE(
       );
     }
 
-    // Revalidate the cache for banner pages
+    // Clear in-memory cache and revalidate Next.js page cache
+    await redisCache.clearPattern('banners:*');
     revalidatePath("/admin/banners");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,
