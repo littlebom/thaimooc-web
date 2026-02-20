@@ -10,17 +10,16 @@ import {
 } from "@/components/ui/table";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { CourseTypesList } from "@/components/admin/course-types-list";
+import { query } from "@/lib/mysql-direct";
+export const dynamic = "force-dynamic";
 
 async function getCourseTypes() {
   try {
-    // Always use localhost for server-side fetching (this is a Server Component)
-    const res = await fetch('http://localhost:3000/api/course-types', {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    // Handle both array response and object with data property
-    return Array.isArray(data) ? data : (data.data || []);
+    const courseTypes = await query(
+      "SELECT * FROM course_types ORDER BY createdAt DESC",
+      []
+    );
+    return courseTypes as any[];
   } catch (error) {
     console.error("Error fetching course types:", error);
     return [];

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { queryOne, execute } from "@/lib/mysql-direct";
 import { redisCache } from "@/lib/redis-cache";
 import { addCacheHeaders } from "@/lib/cache-headers";
+import { getSession } from "@/lib/auth";
 import fs from 'fs';
 import path from 'path';
 
@@ -88,6 +89,11 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     console.log('[Settings API] Received body:', JSON.stringify(body, null, 2)); // Debug log
 

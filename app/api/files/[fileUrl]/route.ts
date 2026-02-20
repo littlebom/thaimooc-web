@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { unlink } from "fs/promises";
 import path from "path";
 import { getUploadsDir } from "@/lib/path-utils";
+import { getSession } from "@/lib/auth";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,11 @@ export async function DELETE(
   { params }: { params: Promise<{ fileUrl: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { fileUrl } = await params;
     const decodedUrl = decodeURIComponent(fileUrl);
 

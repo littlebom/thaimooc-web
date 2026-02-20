@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryOne, execute } from "@/lib/mysql-direct";
+import { getSession } from "@/lib/auth";
 
 interface CSVInstructorData {
   name: string;
@@ -13,6 +14,11 @@ interface CSVInstructorData {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { instructors } = body;
 

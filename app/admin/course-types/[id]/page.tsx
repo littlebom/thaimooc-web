@@ -1,20 +1,13 @@
 import { notFound } from "next/navigation";
 import { CourseTypeForm } from "@/components/admin/course-type-form";
+import { query } from "@/lib/mysql-direct";
+export const dynamic = "force-dynamic";
 
 async function getCourseType(id: string) {
   if (id === "new") return null;
-
   try {
-    // Always use localhost for server-side fetching (this is a Server Component)
-    const res = await fetch(
-      `http://localhost:3000/api/course-types/${id}`,
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    // Handle both direct object and object with data property
-    return data.data || data;
+    const results = await query("SELECT * FROM course_types WHERE id = ?", [id]);
+    return results.length > 0 ? (results[0] as any) : null;
   } catch (error) {
     console.error("Error fetching course type:", error);
     return null;

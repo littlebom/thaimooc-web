@@ -3,14 +3,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { GuidesList } from "@/components/admin/guides-list";
+import { query } from "@/lib/mysql-direct";
+export const dynamic = "force-dynamic";
 
 async function getGuides() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/guides?active=true`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.success ? data.data : [];
+    const guides = await query(
+      "SELECT id, title, category, keywords, is_active, view_count, created_at FROM guides ORDER BY created_at DESC",
+      []
+    );
+    return guides as any[];
   } catch (error) {
     console.error("Error fetching guides:", error);
     return [];

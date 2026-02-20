@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryOne, execute } from "@/lib/mysql-direct";
+import { getSession } from "@/lib/auth";
 
 interface CSVInstitutionData {
   name: string;
@@ -12,6 +13,11 @@ interface CSVInstitutionData {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session || session.role !== 'super_admin') {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { institutions } = body;
 

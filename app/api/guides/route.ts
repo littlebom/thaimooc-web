@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, execute } from "@/lib/mysql-direct";
+import { getSession } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,8 +48,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { title, content, category, keywords } = body;
+    const { title, content, category, keywords, is_active } = body;
 
     if (!title || !content) {
       return NextResponse.json({ success: false, error: "Title and content are required" }, { status: 400 });
@@ -59,8 +65,8 @@ export async function POST(request: NextRequest) {
     const id = `guide-${timestamp}-${random}`;
 
     await execute(
-      `INSERT INTO guides (id, title, content, category, keywords, is_active, view_count, created_at, updated_at) VALUES (?, ?, ?, ?, ?, TRUE, 0, NOW(), NOW())`,
-      [id, title, content, category || null, keywords || null]
+      `INSERT INTO guides (id, title, content, category, keywords, is_active, view_count, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?, NOW(), NOW())`,
+      [id, title, content, category || null, keywords || null, is_active !== false, session.username]
     );
 
     const guides = await query("SELECT * FROM guides WHERE id = ?", [id]);

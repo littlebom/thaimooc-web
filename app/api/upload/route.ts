@@ -3,6 +3,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { getUploadsDir } from "@/lib/path-utils";
+import { getSession } from "@/lib/auth";
 
 // Configure route to handle file uploads
 export const runtime = 'nodejs';
@@ -22,6 +23,11 @@ const TARGET_DIMENSIONS: Record<string, { width: number; height: number }> = {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const rawImageType = (formData.get("imageType") as string) || "default";

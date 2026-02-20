@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, execute } from "@/lib/mysql-direct";
+import { getSession } from "@/lib/auth";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -8,7 +9,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (guides.length === 0) {
       return NextResponse.json({ success: false, error: "Guide not found" }, { status: 404 });
     }
-    await execute(`UPDATE guides SET view_count = view_count + 1 WHERE id = ?`, [id]);
+    // Only increment view_count for public visitors (not admin panel requests)
+    const noCount = request.nextUrl.searchParams.get("noCount") === "true";
+    if (!noCount) {
+      await execute(`UPDATE guides SET view_count = view_count + 1 WHERE id = ?`, [id]);
+    }
     return NextResponse.json({ success: true, data: guides[0] });
   } catch (error) {
     console.error("[API Guides] Error:", error);
@@ -18,6 +23,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const updates: string[] = [];
@@ -44,6 +54,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await getSession();
+    if (!session || !['super_admin', 'admin'].includes(session.role)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     await execute("DELETE FROM guides WHERE id = ?", [id]);
     return NextResponse.json({ success: true, message: "Guide deleted successfully" });

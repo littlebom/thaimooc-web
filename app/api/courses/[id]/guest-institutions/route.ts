@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, execute, transaction } from "@/lib/mysql-direct";
 import { nanoid } from "nanoid";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
     request: NextRequest,
@@ -42,6 +43,11 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const session = await getSession();
+        if (!session || !['super_admin', 'admin'].includes(session.role)) {
+            return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+        }
+
         const { id } = await params;
         const body = await request.json();
         const { institutionIds } = body; // Array of institution IDs to enable
